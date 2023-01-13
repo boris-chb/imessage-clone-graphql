@@ -1,9 +1,25 @@
-import Head from "next/head";
-import Image from "next/image";
-// import { Inter } from "@next/font/google";
+import { Stack } from '@chakra-ui/react';
+import type { NextPage, NextPageContext } from 'next';
+import { getSession, signIn, signOut, useSession } from 'next-auth/react';
 
-// const inter = Inter({ subsets: ["latin"] });
+const Home: NextPage = ({ session }) => {
+  console.log(session);
+  return (
+    <>
+      <Stack>
+        <button onClick={() => signIn('google')}>Sign In</button>
+        <button onClick={() => signOut()}>Sign Out</button>
+      </Stack>
+    </>
+  );
+};
 
-export default function Home() {
-  return <div>Hi Home Page</div>;
+export async function getServerSideProps(context: NextPageContext) {
+  return {
+    props: {
+      session: await getSession(context),
+    },
+  };
 }
+
+export default Home;
