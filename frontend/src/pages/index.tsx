@@ -3,7 +3,6 @@ import type { NextPage, NextPageContext } from 'next';
 import { getSession, signIn, signOut, useSession } from 'next-auth/react';
 
 const Home: NextPage = ({ session }) => {
-  console.log(session);
   return (
     <>
       <Stack>
