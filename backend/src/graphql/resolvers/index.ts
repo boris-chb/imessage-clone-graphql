@@ -1,8 +1,6 @@
-import userResolvers from './user'
+import userResolvers from "./user";
+import merge from "lodash.merge";
 
+const resolvers = merge({}, userResolvers);
 
-const resolvers = {
-    userResolvers
-}
-
-export default resolvers
+export default resolvers;
