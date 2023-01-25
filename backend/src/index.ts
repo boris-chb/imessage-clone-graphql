@@ -5,7 +5,8 @@ import {
 } from "apollo-server-core";
 import express from "express";
 import http from "http";
-
+import { typeDefs } from "./graphql/typeDefs";
+import resolvers from "./graphql/resolvers";
 
 async function main(typeDefs, resolvers) {
   // Required logic for integrating with Express
