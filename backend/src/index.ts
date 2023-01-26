@@ -1,3 +1,6 @@
+import { PrismaClient } from "@prisma/client";
+import { GraphQLContext, Session } from "./util/types";
+import { getSession } from "next-auth/react";
 import { ApolloServer } from "apollo-server-express";
 import {
   ApolloServerPluginDrainHttpServer,
@@ -8,13 +11,11 @@ import http from "http";
 import { typeDefs } from "./graphql/typeDefs";
 import resolvers from "./graphql/resolvers";
 import { makeExecutableSchema } from "@graphql-tools/schema";
+import * as dotenv from "dotenv";
 
 async function main() {
-  // Required logic for integrating with Express
+  dotenv.config();
   const app = express();
-  // Our httpServer handles incoming requests to our Express app.
-  // Below, we tell Apollo Server to "drain" this httpServer,
-  // enabling our servers to shut down gracefully.
   const httpServer = http.createServer(app);
 
   const schema = makeExecutableSchema({
@@ -32,12 +33,33 @@ async function main() {
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
+    context: async ({ req, res }): Promise<GraphQLContext> => {
+      const session = (await getSession({ req })) as Session;
+      console.log(session);
+
+      // passing { session, , } as context to resolvers fn
+      return {
+        session,
+        prisma,
+      };
+    },
   });
+
+  const corsOptions = {
+    origin: process.env.CLIENT_ORIGIN,
+    // for NextAuth authorization headers
+    // necessary to pass Session as Context for resolvers
+    credentials: true,
+  };
+
+  const prisma = new PrismaClient();
+
+  // const pubsub =
 
   await server.start();
   server.applyMiddleware({
     app,
-    path: "/graphql",
+    cors: corsOptions,
   });
 
   // Modified server startup

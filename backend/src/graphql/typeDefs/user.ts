@@ -1,24 +1,23 @@
 import { gql } from "apollo-server-core";
 
 const typeDefs = gql`
-    type User {
-        id: String
-        username: String
-    }
+  type SearchedUser {
+    id: String
+    username: String
+  }
 
-    type Query {
-        searchUsers(username: String): [User]
-    }
+  type Query {
+    searchUsers(username: String): [SearchedUser]
+  }
 
-    type Mutation {
-        createUsername(username: String): TransactionResult 
-    }
+  type Mutation {
+    createUsername(username: String): TransactionResult
+  }
 
-    type TransactionResult {
-        success: Boolean,
-        error: String
-    }
+  type TransactionResult {
+    success: Boolean
+    error: String
+  }
 `;
 
-
-export default typeDefs
+export default typeDefs;
