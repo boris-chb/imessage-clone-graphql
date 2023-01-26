@@ -366,10 +366,10 @@
   "resolved" "https://registry.npmjs.org/@prisma/engines-version/-/engines-version-4.8.0-61.d6e67a83f971b175a593ccc12e15c4a757f93ffe.tgz"
   "version" "4.8.0-61.d6e67a83f971b175a593ccc12e15c4a757f93ffe"
 
-"@prisma/engines@4.8.1":
-  "integrity" "sha512-93tctjNXcIS+i/e552IO6tqw17sX8liivv8WX9lDMCpEEe3ci+nT9F+1oHtAafqruXLepKF80i/D20Mm+ESlOw=="
-  "resolved" "https://registry.npmjs.org/@prisma/engines/-/engines-4.8.1.tgz"
-  "version" "4.8.1"
+"@prisma/engines@4.9.0":
+  "integrity" "sha512-t1pt0Gsp+HcgPJrHFc+d/ZSAaKKWar2G/iakrE07yeKPNavDP3iVKPpfXP22OTCHZUWf7OelwKJxQgKAm5hkgw=="
+  "resolved" "https://registry.npmjs.org/@prisma/engines/-/engines-4.9.0.tgz"
+  "version" "4.9.0"
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   "integrity" "sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ=="
@@ -884,7 +884,7 @@
   "resolved" "https://registry.npmjs.org/diff/-/diff-4.0.2.tgz"
   "version" "4.0.2"
 
-"dotenv@^16.0.1":
+"dotenv@^16.0.3":
   "integrity" "sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ=="
   "resolved" "https://registry.npmjs.org/dotenv/-/dotenv-16.0.3.tgz"
   "version" "16.0.3"
@@ -1242,10 +1242,10 @@
   "resolved" "https://registry.npmjs.org/negotiator/-/negotiator-0.6.3.tgz"
   "version" "0.6.3"
 
-"next-auth@^4.10.3":
-  "integrity" "sha512-USP8ihmvB7iCGtkS0+toe2QPrzdbZfkydQZX56JOI9Ft5n/BardOXh3D4wQ2An+vpq/jDKojGlgfv21wVElW7A=="
-  "resolved" "https://registry.npmjs.org/next-auth/-/next-auth-4.18.8.tgz"
-  "version" "4.18.8"
+"next-auth@^4.18.10":
+  "integrity" "sha512-j2JVyH7byZ2eqXlOqNLpOO7gOlAkTzblxLZNeZihKCeIabYFHNdAJgUvVahhnHs3pZ4xaa3ZqGQHgi1uE97L9Q=="
+  "resolved" "https://registry.npmjs.org/next-auth/-/next-auth-4.18.10.tgz"
+  "version" "4.18.10"
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@panva/hkdf" "^1.0.1"
@@ -1410,12 +1410,12 @@
   "resolved" "https://registry.npmjs.org/pretty-format/-/pretty-format-3.8.0.tgz"
   "version" "3.8.0"
 
-"prisma@*", "prisma@^4.0.0":
-  "integrity" "sha512-ZMLnSjwulIeYfaU1O6/LF6PEJzxN5par5weykxMykS9Z6ara/j76JH3Yo2AH3bgJbPN4Z6NeCK9s5fDkzf33cg=="
-  "resolved" "https://registry.npmjs.org/prisma/-/prisma-4.8.1.tgz"
-  "version" "4.8.1"
+"prisma@*", "prisma@^4.9.0":
+  "integrity" "sha512-bS96oZ5oDFXYgoF2l7PJ3Mp1wWWfLOo8B/jAfbA2Pn0Wm5Z/owBHzaMQKS3i1CzVBDWWPVnOohmbJmjvkcHS5w=="
+  "resolved" "https://registry.npmjs.org/prisma/-/prisma-4.9.0.tgz"
+  "version" "4.9.0"
   dependencies:
-    "@prisma/engines" "4.8.1"
+    "@prisma/engines" "4.9.0"
 
 "proxy-addr@~2.0.7":
   "integrity" "sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg=="
