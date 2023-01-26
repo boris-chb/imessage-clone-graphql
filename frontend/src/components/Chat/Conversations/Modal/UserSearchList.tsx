@@ -1,47 +1,31 @@
 import { Avatar, Button, Flex, Stack, Text } from '@chakra-ui/react';
 import * as React from 'react';
 import { SearchedUser } from 'src/util/types';
+import UserSearchItem from './UserSearchItem';
 
 interface UserSearchListProps {
   users: Array<SearchedUser>;
+  addParticipant: (user: SearchedUser) => void;
 }
 
 const UserSearchList: React.FunctionComponent<UserSearchListProps> = ({
   users,
+  addParticipant,
 }) => {
-  const selectUser = () => {};
-
   return (
     <>
       {users.length === 0 ? (
         <Flex mt={6} justify={'center'}>
-          <Text>no users found</Text>
+          <Text>No users found</Text>
         </Flex>
       ) : (
         <Stack mt={6}>
           {users.map((user) => (
-            <Stack
+            <UserSearchItem
               key={user.id}
-              direction={'row'}
-              align={'center'}
-              spacing={4}
-              py={2.5}
-              px={5}
-              borderRadius={4}
-              _hover={{ bg: 'whiteAlpha.200' }}
-            >
-              <Avatar />
-              <Flex justify={'space-between'} align="center" width="100%">
-                <Text color={'whiteAlpha.700'}>{user.username}</Text>
-                <Button
-                  bg={'brand.100'}
-                  _hover={{ bg: 'brand.100' }}
-                  onClick={selectUser}
-                >
-                  Select
-                </Button>
-              </Flex>
-            </Stack>
+              user={user}
+              addParticipant={addParticipant}
+            />
           ))}
         </Stack>
       )}

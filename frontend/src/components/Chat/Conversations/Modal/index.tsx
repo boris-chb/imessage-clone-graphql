@@ -13,12 +13,15 @@ import {
   Input,
 } from '@chakra-ui/react';
 import React, { use, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import UserOperations from 'src/graphql/operations/user';
 import {
   SearchedUser,
   SearchUsersData,
   SearchUsersInput,
 } from 'src/util/types';
+import ParticipantList from './ParticipantList';
+import Participants from './ParticipantList';
 import UserSearchList from './UserSearchList';
 
 interface ModalProps {
@@ -46,6 +49,25 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
     searchUsers({ variables: { username } });
   };
 
+  const addParticipant = (user: SearchedUser) => {
+    if (participants.includes(user)) return;
+    setParticipants((currentParticipants) => [...currentParticipants, user]);
+    setUsername('');
+  };
+
+  const removeParticipant = (userId: string) => {
+    setParticipants((prev) => prev.filter((p) => p.id !== userId));
+  };
+
+  const onCreateConversation = async () => {
+    try {
+      // createConversation Mutation
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -70,7 +92,29 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
                 </Button>
               </Stack>
             </form>
-            {data?.searchUsers && <UserSearchList users={data.searchUsers} />}
+            {data?.searchUsers && (
+              <UserSearchList
+                users={data.searchUsers}
+                addParticipant={addParticipant}
+              />
+            )}
+            {participants.length !== 0 && (
+              <>
+                <ParticipantList
+                  participants={participants}
+                  removeParticipant={removeParticipant}
+                />
+                <Button
+                  bg="brand.100"
+                  width={'100%'}
+                  mt={6}
+                  _hover={{ bg: 'brand.100' }}
+                  onClick={onCreateConversation}
+                >
+                  Start conversation
+                </Button>
+              </>
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>
