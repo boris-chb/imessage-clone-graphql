@@ -14,7 +14,12 @@ import {
 } from '@chakra-ui/react';
 import React, { use, useState } from 'react';
 import UserOperations from 'src/graphql/operations/user';
-import { SearchUsersData, SearchUsersInput } from 'src/util/types';
+import {
+  SearchedUser,
+  SearchUsersData,
+  SearchUsersInput,
+} from 'src/util/types';
+import UserSearchList from './UserSearchList';
 
 interface ModalProps {
   isOpen: boolean;
@@ -26,6 +31,7 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
   onClose,
 }) => {
   const [username, setUsername] = useState('');
+  const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
   const [searchUsers, { data, error, loading }] = useLazyQuery<
     SearchUsersData,
     SearchUsersInput
@@ -45,7 +51,7 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg="#2d2d2d" pb={4}>
-          <ModalHeader>Find users</ModalHeader>
+          <ModalHeader>Start a conversation</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <form onSubmit={onSearch}>
@@ -64,6 +70,7 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
                 </Button>
               </Stack>
             </form>
+            {data?.searchUsers && <UserSearchList users={data.searchUsers} />}
           </ModalBody>
         </ModalContent>
       </Modal>
