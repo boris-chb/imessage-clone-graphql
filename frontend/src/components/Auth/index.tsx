@@ -58,7 +58,7 @@ const Auth: React.FunctionComponent<AuthProps> = ({
   };
 
   return (
-    <Center height="100vh" border="1px solid red">
+    <Center height="100vh">
       <Stack spacing={7} align="center">
         {session ? (
           <>

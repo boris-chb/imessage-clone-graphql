@@ -16,7 +16,7 @@ export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET as string,
   callbacks: {
     async session({ session, token, user }) {
-      console.log('inside session callback', session, user, token);
+      console.log('inside session callback, returning new session', session);
       // Add custom property to the Session object
       const sessionUser = { ...session.user, ...user };
 
