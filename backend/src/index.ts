@@ -1,4 +1,5 @@
-import { GraphQLContext } from "./util/types";
+import { PrismaClient } from "@prisma/client";
+import { GraphQLContext, Session } from "./util/types";
 import { getSession } from "next-auth/react";
 import { ApolloServer } from "apollo-server-express";
 import {
@@ -33,12 +34,13 @@ async function main() {
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
     context: async ({ req, res }): Promise<GraphQLContext> => {
-      const session = await getSession({ req });
+      const session = (await getSession({ req })) as Session;
       console.log(session);
 
       // passing { session, , } as context to resolvers fn
       return {
         session,
+        prisma,
       };
     },
   });
@@ -49,6 +51,10 @@ async function main() {
     // necessary to pass Session as Context for resolvers
     credentials: true,
   };
+
+  const prisma = new PrismaClient();
+
+  // const pubsub =
 
   await server.start();
   server.applyMiddleware({
