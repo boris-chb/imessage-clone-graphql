@@ -4,7 +4,7 @@ const UserOperations = {
   Queries: {
     searchUsers: gql`
       query SearchUsers($username: String!) {
-        searchUser(username: $username) {
+        searchUsers(username: $username) {
           id
           username
         }

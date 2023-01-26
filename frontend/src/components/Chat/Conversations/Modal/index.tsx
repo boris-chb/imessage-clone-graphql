@@ -31,10 +31,11 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
     SearchUsersInput
   >(UserOperations.Queries.searchUsers);
 
+  console.log('SEARCH DATA', data);
+
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('inside onsubmit', username);
     // searchUsers Query
     searchUsers({ variables: { username } });
   };
@@ -54,7 +55,11 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
-                <Button type="submit" disabled={!username}>
+                <Button
+                  type="submit"
+                  isDisabled={!username}
+                  isLoading={loading}
+                >
                   Search
                 </Button>
               </Stack>
