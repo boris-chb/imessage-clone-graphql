@@ -1,7 +1,9 @@
+import { PrismaClient } from '@prisma/client';
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import prisma from '../../../../lib/prismadb';
+
+const prisma = new PrismaClient();
 
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -14,9 +16,14 @@ export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET as string,
   callbacks: {
     async session({ session, token, user }) {
-      console.log('inside session callback');
+      console.log('inside session callback', session, user, token);
       // Add custom property to the Session object
-      return { ...session, user: { ...session.user, ...user } };
+      const sessionUser = { ...session.user, ...user };
+
+      return Promise.resolve({
+        ...session,
+        user: sessionUser,
+      });
     },
   },
 });

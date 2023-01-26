@@ -9,11 +9,14 @@ const Home: NextPage = () => {
 
   console.log(session);
 
-  const reloadSession = () => {};
+  const reloadSession = () => {
+    const event = new Event('visibilitychange');
+    document.dispatchEvent(event);
+  };
 
   return (
     <Box>
-      {session?.user.username ? (
+      {session?.user?.username ? (
         <Chat />
       ) : (
         <Auth session={session} reloadSession={reloadSession} />
@@ -24,6 +27,7 @@ const Home: NextPage = () => {
 
 export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession(context);
+
   return {
     props: {
       session,

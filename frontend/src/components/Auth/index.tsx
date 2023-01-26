@@ -2,7 +2,8 @@ import { useMutation } from '@apollo/client';
 import { Button, Center, Image, Input, Stack, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { signIn } from 'next-auth/react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import UserOperations from 'src/graphql/operations/user';
 import { CreateUsernameData, CreateUsernameVariables } from 'src/util/types';
 
@@ -18,23 +19,40 @@ const Auth: React.FunctionComponent<AuthProps> = ({
 }) => {
   const [username, setUsername] = useState('');
 
-  const [createUsername, { data, loading, error }] = useMutation<
+  const [createUsername, { loading, error }] = useMutation<
     CreateUsernameData,
     CreateUsernameVariables
   >(UserOperations.Mutations.createUsername);
 
-  console.log('useMutation() ', data, loading, error);
-
   const onSubmit = async () => {
     // GraphQL Mutation to Create Username
     if (!username) return;
+
     try {
-      await createUsername({
+      const { data } = await createUsername({
         variables: {
           username,
         },
       });
-    } catch (error) {
+
+      if (!data?.createUsername) {
+        throw new Error();
+      }
+
+      if (data.createUsername.error) {
+        const {
+          createUsername: { error },
+        } = data;
+
+        toast.error(error);
+      }
+
+      toast.success('Username successfully created');
+
+      // Reload session to fetch updated user
+      reloadSession();
+    } catch (error: any) {
+      toast.error('There was an error!');
       console.error('onSubmit error', error);
     }
   };
@@ -48,15 +66,20 @@ const Auth: React.FunctionComponent<AuthProps> = ({
             <Input
               placeholder="Enter a username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setUsername(e.target.value)
+              }
             />
-            <Button width={'100%'} onClick={onSubmit}>
+            <Button width={'100%'} onClick={onSubmit} isLoading={loading}>
               Save
             </Button>
           </>
         ) : (
           <>
-            <Text fontSize={'3xl'}>iMessage GraphQL</Text>
+            <Text fontSize={'4xl'}>iMessage GraphQL</Text>
+            <Text width={'70%'} align="center">
+              Sign in with Google to connect with your friends
+            </Text>
             <Button
               onClick={() => signIn('google')}
               leftIcon={
