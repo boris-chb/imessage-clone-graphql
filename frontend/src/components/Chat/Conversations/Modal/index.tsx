@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import {
   Button,
   ModalOverlay,
@@ -12,14 +12,21 @@ import {
   Stack,
   Input,
 } from '@chakra-ui/react';
+import { Session } from 'next-auth';
+import { useSession } from 'next-auth/react';
 import React, { use, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import ConversationOperations from 'src/graphql/operations/conversation';
 import UserOperations from 'src/graphql/operations/user';
+import {
+  CreateConversationData,
+  CreateConversationInput,
+} from 'src/types/Conversation';
 import {
   SearchedUser,
   SearchUsersData,
   SearchUsersInput,
-} from 'src/util/types';
+} from 'src/types/User';
 import ParticipantList from './ParticipantList';
 import Participants from './ParticipantList';
 import UserSearchList from './UserSearchList';
@@ -34,11 +41,17 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
   onClose,
 }) => {
   const [username, setUsername] = useState('');
+  const session = useSession();
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
   const [searchUsers, { data, error, loading }] = useLazyQuery<
     SearchUsersData,
     SearchUsersInput
   >(UserOperations.Queries.searchUsers);
+
+  const [createConversation, { loading: createConversationLoading }] =
+    useMutation<CreateConversationData, CreateConversationInput>(
+      ConversationOperations.Mutations.createConversation
+    );
 
   console.log('SEARCH DATA', data);
 
@@ -61,7 +74,22 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
 
   const onCreateConversation = async () => {
     try {
-      // createConversation Mutation
+      const participantIds = [
+        ...participants.map((p) => p.id),
+        session.data?.user.id as string,
+      ];
+
+      const { data, errors } = await createConversation({
+        variables: {
+          participantIds,
+        },
+      });
+
+      if (errors) {
+        console.error(errors);
+      }
+
+      console.log('onCreateConversation', data);
     } catch (error: any) {
       console.error(error);
       toast.error(error.message);
@@ -110,6 +138,7 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
                   mt={6}
                   _hover={{ bg: 'brand.100' }}
                   onClick={onCreateConversation}
+                  isLoading={createConversationLoading}
                 >
                   Start conversation
                 </Button>

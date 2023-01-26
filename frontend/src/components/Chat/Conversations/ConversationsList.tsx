@@ -3,13 +3,11 @@ import { Session } from 'next-auth';
 import { useState } from 'react';
 import ConversationsModal from './Modal';
 
-interface ConversationsListProps {
-  session: Session;
-}
+interface ConversationsListProps {}
 
 const ConversationsList: React.FunctionComponent<
   ConversationsListProps
-> = () => {
+> = ({}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onOpen = () => setIsOpen(true);

@@ -1,4 +1,3 @@
-// User
 export interface CreateUsernameData {
   createUsername: {
     success: boolean;

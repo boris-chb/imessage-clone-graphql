@@ -4,9 +4,14 @@ const ConversationOperations = {
   Queries: {},
   Mutations: {
     createConversation: gql`
-      mutation CreateConversation() {}
+      mutation CreateConversation($participantIds: [String]!) {
+        createConversation(participantIds: $participantIds) {
+          conversationId
+        }
+      }
     `,
   },
+  Subscriptions: {},
 };
 
 export default ConversationOperations;

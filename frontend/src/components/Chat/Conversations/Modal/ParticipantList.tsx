@@ -1,5 +1,5 @@
 import { Flex, Stack, Text } from '@chakra-ui/react';
-import { SearchedUser } from 'src/util/types';
+import { SearchedUser } from 'src/types/User';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import Participant from './Participant';
 
