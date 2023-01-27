@@ -11,6 +11,7 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import ConversationOperations from 'src/graphql/operations/conversation';
@@ -36,6 +37,7 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const session = useSession();
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
@@ -48,14 +50,9 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
       ConversationOperations.Mutations.createConversation
     );
 
-  //
-  console.log('SEARCH DATA', data);
-  //
-
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // searchUsers Queryxxl
     searchUsers({ variables: { username } });
   };
 
@@ -70,26 +67,37 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
   };
 
   const onCreateConversation = async () => {
+    const participantIds = [
+      session.data?.user.id as string,
+      ...participants.map((p) => p.id),
+    ];
     try {
-      const participantIds = [
-        ...participants.map((p) => p.id),
-        session.data?.user.id as string,
-      ];
-
-      const { data, errors } = await createConversation({
+      const { data } = await createConversation({
         variables: {
           participantIds,
         },
       });
 
-      if (errors) {
-        console.error(errors);
+      if (!data?.createConversation) {
+        throw new Error('Failed to create conversation');
+        toast.error('Failed to create conversation');
       }
+
+      const {
+        createConversation: { conversationId },
+      } = data;
+
+      router.push({ query: { conversationId } });
+
+      // Clear state and close modal
+      setParticipants([]);
+      setUsername('');
+      onClose();
 
       console.log('onCreateConversation', data);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message);
+      toast.error(error);
     }
   };
 
