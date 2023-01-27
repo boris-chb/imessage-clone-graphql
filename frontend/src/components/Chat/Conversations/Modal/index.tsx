@@ -1,20 +1,17 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import {
   Button,
-  ModalOverlay,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Modal,
-  Text,
+  ModalOverlay,
   Stack,
-  Input,
 } from '@chakra-ui/react';
-import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import ConversationOperations from 'src/graphql/operations/conversation';
 import UserOperations from 'src/graphql/operations/user';
@@ -28,7 +25,6 @@ import {
   SearchUsersInput,
 } from 'src/types/User';
 import ParticipantList from './ParticipantList';
-import Participants from './ParticipantList';
 import UserSearchList from './UserSearchList';
 
 interface ModalProps {
@@ -47,18 +43,19 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
     SearchUsersData,
     SearchUsersInput
   >(UserOperations.Queries.searchUsers);
-
   const [createConversation, { loading: createConversationLoading }] =
     useMutation<CreateConversationData, CreateConversationInput>(
       ConversationOperations.Mutations.createConversation
     );
 
+  //
   console.log('SEARCH DATA', data);
+  //
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // searchUsers Query
+    // searchUsers Queryxxl
     searchUsers({ variables: { username } });
   };
 
