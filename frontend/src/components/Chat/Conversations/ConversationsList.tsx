@@ -3,20 +3,18 @@ import { Session } from 'next-auth';
 import { useState } from 'react';
 import ConversationsModal from './Modal';
 
-interface ConversationsListProps {
-  session: Session;
-}
+interface ConversationsListProps {}
 
 const ConversationsList: React.FunctionComponent<
   ConversationsListProps
-> = () => {
+> = ({}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
 
   return (
-    <Box width={'100%'}>
+    <Box width={'100%'} border="1px solid red">
       <Box
         py={2}
         px={4}

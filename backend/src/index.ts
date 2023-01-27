@@ -35,9 +35,8 @@ async function main() {
     ],
     context: async ({ req, res }): Promise<GraphQLContext> => {
       const session = (await getSession({ req })) as Session;
-      console.log(session);
 
-      // passing { session, , } as context to resolvers fn
+      // passing { session, prisma } as context to resolvers fn
       return {
         session,
         prisma,

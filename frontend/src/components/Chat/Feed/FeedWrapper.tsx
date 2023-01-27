@@ -1,6 +1,5 @@
-import { Button } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { Session } from 'next-auth';
-import { signOut } from 'next-auth/react';
 
 interface FeedWrapperProps {
   session: Session;
@@ -9,7 +8,7 @@ interface FeedWrapperProps {
 const FeedWrapper: React.FunctionComponent<FeedWrapperProps> = ({
   session,
 }) => {
-  return <Button onClick={() => signOut()}>Logout</Button>;
+  return <Box border="1px solid red">FeedWrapper</Box>;
 };
 
 export default FeedWrapper;
