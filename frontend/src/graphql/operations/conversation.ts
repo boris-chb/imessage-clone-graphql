@@ -1,12 +1,49 @@
 import { gql } from '@apollo/client';
 
+const GetConversationFileds = `
+    getConversations {
+      id
+      participants {
+        user {
+          id
+          username
+        }
+        seenLatestMessage
+      }
+      latestMessage {
+        id
+        sender {
+          id
+          username
+        }
+        body
+        createdAt
+      }
+      updatedAt
+    }
+`;
+
 const ConversationOperations = {
-  Queries: {},
+  Queries: {
+    getConversations: gql`
+      query getConversations {
+        ${GetConversationFileds}
+      }
+    `,
+  },
   Mutations: {
     createConversation: gql`
       mutation CreateConversation($participantIds: [String]!) {
         createConversation(participantIds: $participantIds) {
           conversationId
+        }
+      }
+    `,
+    deleteConversation: gql`
+      mutation DeleteConversation($conversationId: String!) {
+        deleteConversation(conversationId: $conversationId) {
+          success
+          error
         }
       }
     `,

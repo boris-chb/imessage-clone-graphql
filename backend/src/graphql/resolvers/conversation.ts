@@ -1,9 +1,13 @@
-import { Prisma } from "@prisma/client";
+import { prisma, Prisma } from "@prisma/client";
 import { ApolloError } from "apollo-server-core";
-import { GraphQLContext } from "./../../util/types";
+import { GraphQLContext, TransactionResult } from "./../../util/types";
 
 const resolvers = {
-  Query: {},
+  Query: {
+    getConversations: async (_: any, __: any, context: GraphQLContext) => {
+      console.log(`getConversation() resolver`);
+    },
+  },
   Mutation: {
     createConversation: async (
       _: any,
@@ -12,7 +16,7 @@ const resolvers = {
     ): Promise<{ conversationId: string }> => {
       const { session, prisma } = context;
       const { participantIds } = args;
-      console.log("conversation resolver, participants:", participantIds);
+      console.log(`createConversation(${participantIds} resolver`);
 
       if (!session?.user) {
         throw new ApolloError("Not Authorized");
@@ -47,6 +51,39 @@ const resolvers = {
       } catch (error) {
         console.error("createConversation error", error);
         throw new ApolloError("Error creating conversation");
+      }
+    },
+    deleteConversation: async (
+      _: any,
+      args: { conversationId: string },
+      context: GraphQLContext
+    ): Promise<TransactionResult> => {
+      const { prisma } = context;
+      const { conversationId } = args;
+
+      try {
+        // find conversation to delete
+        // const conversation = await prisma.conversation.findUnique({
+        //   where: { id: conversationId },
+        //   // TODO: protect route
+        // });
+        // delete conversation
+
+        const deletedConversation = await prisma.conversation.delete({
+          where: { id: conversationId },
+        });
+
+        if (!deletedConversation)
+          return { success: false, error: "Error deleting conversation" };
+
+        console.log("Conversation deleted", deletedConversation);
+        console.log(`deleteConversation(${conversationId}) resolver`);
+        return { success: true };
+      } catch (err: any) {
+        console.error("delete Conversation resolver error", err.message);
+        return {
+          error: err?.message,
+        };
       }
     },
   },

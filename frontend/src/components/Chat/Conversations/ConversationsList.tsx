@@ -14,7 +14,7 @@ const ConversationsList: React.FunctionComponent<
   const onClose = () => setIsOpen(false);
 
   return (
-    <Box width={'100%'} border="1px solid red">
+    <Box width={'100%'}>
       <Box
         py={2}
         px={4}
