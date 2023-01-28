@@ -79,8 +79,8 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
       });
 
       if (!data?.createConversation) {
-        throw new Error('Failed to create conversation');
         toast.error('Failed to create conversation');
+        throw new Error('Failed to create conversation');
       }
 
       const {
