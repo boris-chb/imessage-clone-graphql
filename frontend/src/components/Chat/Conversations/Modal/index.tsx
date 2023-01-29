@@ -56,8 +56,7 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
 
     searchUsers({ variables: { username } });
 
-    data?.searchUsers &&
-      setSearchedUsers((prev) => [...prev, ...data.searchUsers]);
+    data?.searchUsers && setSearchedUsers(() => data.searchUsers);
   };
 
   const addParticipant = (user: SearchedUser) => {
@@ -125,7 +124,7 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
               </Button>
             </Stack>
           </form>
-          {searchedUsers && (
+          {searchedUsers.length !== 0 && (
             <UserSearchList
               users={searchedUsers}
               addParticipant={addParticipant}

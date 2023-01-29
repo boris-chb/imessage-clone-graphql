@@ -1,17 +1,45 @@
+import { useMutation } from '@apollo/client';
+import { ConversationPopulated } from '@backend/types/conversation';
 import { Box, Text } from '@chakra-ui/react';
-import { Session } from 'next-auth';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
+import ConversationOperations from 'src/graphql/operations/conversation';
+import {
+  DeleteConversationArgs,
+  DeleteConversationData,
+} from 'src/types/Conversation';
+import ConversationItem from '.';
 import ConversationsModal from './Modal';
 
-interface ConversationsListProps {}
+export interface ConversationsListProps {
+  conversations?: ConversationPopulated[];
+}
 
-const ConversationsList: React.FunctionComponent<
-  ConversationsListProps
-> = ({}) => {
+const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
+  conversations,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
+
+  const [
+    deleteConversation,
+    { loading: deleteConversationLoading, error: deleteConversationError },
+  ] = useMutation<DeleteConversationData, DeleteConversationArgs>(
+    ConversationOperations.Mutations.deleteConversation
+  );
+
+  const onDeleteConversation = async (convId: string) => {
+    await deleteConversation({
+      variables: {
+        conversationId: convId,
+      },
+    });
+
+    router.push('/');
+  };
 
   return (
     <Box width={'100%'}>
@@ -29,6 +57,19 @@ const ConversationsList: React.FunctionComponent<
         </Text>
       </Box>
       <ConversationsModal isOpen={isOpen} onClose={onClose} />
+      {conversations?.length !== 0 ? (
+        <>
+          {conversations?.map((convo) => (
+            <ConversationItem
+              key={convo.id}
+              conversation={convo}
+              onDelete={onDeleteConversation}
+            />
+          ))}
+        </>
+      ) : (
+        <>You have no conversations</>
+      )}
     </Box>
   );
 };

@@ -1,4 +1,4 @@
-import { GraphQLContext, TransactionResult } from "./../../util/types";
+import { GraphQLContext, TransactionResult } from "../../types";
 import { ApolloError } from "apollo-server-core";
 import { User } from "@prisma/client";
 

@@ -1,4 +1,8 @@
-// export interface Conversation {}
+import { ConversationPopulated } from '../../../backend/src/types/conversation';
+
+export interface GetConversationsData {
+  conversations: Array<ConversationPopulated>;
+}
 
 export interface CreateConversationData {
   createConversation: {

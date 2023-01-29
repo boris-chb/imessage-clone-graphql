@@ -1,11 +1,48 @@
-import { prisma, Prisma } from "@prisma/client";
 import { ApolloError } from "apollo-server-core";
-import { GraphQLContext, TransactionResult } from "./../../util/types";
+import { Prisma } from "@prisma/client";
+import { GraphQLContext, TransactionResult } from "../../types";
+import { ConversationPopulated } from "src/types/conversation";
+import { GraphQLError } from "graphql";
 
 const resolvers = {
   Query: {
-    getConversations: async (_: any, __: any, context: GraphQLContext) => {
-      console.log(`getConversation() resolver`);
+    conversations: async (
+      _: any,
+      __: any,
+      context: GraphQLContext
+    ): Promise<Array<ConversationPopulated>> => {
+      const { prisma, session } = context;
+
+      if (!session?.user) throw new ApolloError("Not authorized");
+
+      const {
+        user: { id: userId },
+      } = session;
+      try {
+        const conversations = await prisma.conversation.findMany({
+          where: {
+            participants: {
+              some: {
+                userId: {
+                  equals: userId,
+                },
+              },
+            },
+          },
+          include: conversationPopulated,
+        });
+
+        // let filteredConversations = conversations.filter(
+        //   (conversation) =>
+        //     !!conversation.participants.find((p) => p.userId === userId)
+        // );
+
+        console.log("getConversations query resolver:", conversations);
+        return conversations;
+      } catch (error: any) {
+        console.error(error);
+        throw new GraphQLError("Could not get conversations");
+      }
     },
   },
   Mutation: {
@@ -26,6 +63,7 @@ const resolvers = {
         user: { id: userId },
       } = session;
 
+      console.log("participants Ids", participantIds);
       // Call db
       try {
         const conversation = await prisma.conversation.create({
@@ -44,6 +82,8 @@ const resolvers = {
         });
 
         // emit a CONVERSATION_CREATED event using pubsub
+
+        console.log("createConversation mutation resolver", conversation);
 
         return {
           conversationId: conversation.id,
@@ -92,6 +132,7 @@ const resolvers = {
   // }
 };
 
+// Generate TypeScript Types
 export const participantPopulated =
   Prisma.validator<Prisma.ConversationParticipantInclude>()({
     user: { select: { id: true, username: true } },

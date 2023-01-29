@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client';
 
-const GetConversationFileds = `
-    getConversations {
+const GetConversationsFileds = `
       id
       participants {
         user {
@@ -20,14 +19,15 @@ const GetConversationFileds = `
         createdAt
       }
       updatedAt
-    }
 `;
 
 const ConversationOperations = {
   Queries: {
     getConversations: gql`
       query getConversations {
-        ${GetConversationFileds}
+        conversations {
+          ${GetConversationsFileds}
+        }
       }
     `,
   },

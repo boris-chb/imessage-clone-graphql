@@ -1,22 +1,24 @@
-import { PrismaClient } from "@prisma/client";
-import { GraphQLContext, Session } from "./util/types";
-import { getSession } from "next-auth/react";
-import { ApolloServer } from "apollo-server-express";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import {
   ApolloServerPluginDrainHttpServer,
   ApolloServerPluginLandingPageLocalDefault,
 } from "apollo-server-core";
+import { ApolloServer } from "apollo-server-express";
+import * as dotenv from "dotenv";
 import express from "express";
 import http from "http";
-import { typeDefs } from "./graphql/typeDefs";
+import { getSession } from "next-auth/react";
 import resolvers from "./graphql/resolvers";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import * as dotenv from "dotenv";
+import { typeDefs } from "./graphql/typeDefs";
+import { PrismaClient } from "@prisma/client";
+import { GraphQLContext } from "./types";
+import { Session } from "./types/user";
 
 async function main() {
   dotenv.config();
   const app = express();
   const httpServer = http.createServer(app);
+  const prisma = new PrismaClient();
 
   const schema = makeExecutableSchema({
     typeDefs,
@@ -50,8 +52,6 @@ async function main() {
     // necessary to pass Session as Context for resolvers
     credentials: true,
   };
-
-  const prisma = new PrismaClient();
 
   // const pubsub =
 

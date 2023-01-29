@@ -30,7 +30,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    getConversations: [Conversation]
+    conversations: [Conversation]
   }
 
   type Mutation {

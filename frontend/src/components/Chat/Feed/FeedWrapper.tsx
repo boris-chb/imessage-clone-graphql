@@ -1,9 +1,8 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
-import { IoIosCloseCircleOutline } from 'react-icons/io';
+import { useMutation } from '@apollo/client';
+import { Flex, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
-import { useMutation, useQuery } from '@apollo/client';
-import UserOperations from 'src/graphql/operations/user';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 import ConversationOperations from 'src/graphql/operations/conversation';
 import {
   DeleteConversationArgs,
@@ -17,25 +16,9 @@ interface FeedWrapperProps {
 const FeedWrapper: React.FunctionComponent<FeedWrapperProps> = ({
   session,
 }) => {
-  const [deleteConversation, { loading, error }] = useMutation<
-    DeleteConversationData,
-    DeleteConversationArgs
-  >(ConversationOperations.Mutations.deleteConversation);
-
   const router = useRouter();
 
   const { conversationId } = router.query;
-  console.log(conversationId);
-
-  const onDeleteConversation = async () => {
-    await deleteConversation({
-      variables: {
-        conversationId: conversationId as string,
-      },
-    });
-
-    router.push('/');
-  };
 
   return (
     <Flex
@@ -46,14 +29,7 @@ const FeedWrapper: React.FunctionComponent<FeedWrapperProps> = ({
       align="center"
     >
       {conversationId ? (
-        <Flex>
-          {conversationId}{' '}
-          <IoIosCloseCircleOutline
-            size={20}
-            cursor={'pointer'}
-            onClick={onDeleteConversation}
-          />
-        </Flex>
+        <Flex>{conversationId}</Flex>
       ) : (
         <Text align="center">No conversation selected</Text>
       )}
