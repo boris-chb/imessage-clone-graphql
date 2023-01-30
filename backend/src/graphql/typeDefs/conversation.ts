@@ -36,6 +36,10 @@ const typeDefs = gql`
   type Mutation {
     deleteConversation(conversationId: String!): TransactionResult
   }
+
+  type Subscription {
+    conversationCreated: Conversation
+  }
 `;
 
 export default typeDefs;

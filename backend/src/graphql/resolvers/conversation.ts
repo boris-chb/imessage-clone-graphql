@@ -37,7 +37,10 @@ const resolvers = {
         //     !!conversation.participants.find((p) => p.userId === userId)
         // );
 
-        console.log("getConversations query resolver:", conversations);
+        console.log(
+          "[📁conversation.ts:40] conversations  === ",
+          conversations
+        );
         return conversations;
       } catch (error: any) {
         console.error(error);
@@ -51,9 +54,8 @@ const resolvers = {
       args: { participantIds: Array<string> },
       context: GraphQLContext
     ): Promise<{ conversationId: string }> => {
-      const { session, prisma } = context;
+      const { session, prisma, pubsub } = context;
       const { participantIds } = args;
-      console.log(`createConversation(${participantIds} resolver`);
 
       if (!session?.user) {
         throw new ApolloError("Not Authorized");
@@ -62,8 +64,10 @@ const resolvers = {
       const {
         user: { id: userId },
       } = session;
-
-      console.log("participants Ids", participantIds);
+      console.log(
+        "[📁conversation.ts:67] participantIds  === ",
+        participantIds
+      );
       // Call db
       try {
         const conversation = await prisma.conversation.create({
@@ -82,8 +86,11 @@ const resolvers = {
         });
 
         // emit a CONVERSATION_CREATED event using pubsub
+        pubsub.publish("CONVERSATION_CREATED", {
+          conversationCreated: conversation,
+        });
 
-        console.log("createConversation mutation resolver", conversation);
+        console.log("CONVERSATION_CREATED published", conversation);
 
         return {
           conversationId: conversation.id,
@@ -116,8 +123,10 @@ const resolvers = {
         if (!deletedConversation)
           return { success: false, error: "Error deleting conversation" };
 
-        console.log("Conversation deleted", deletedConversation);
-        console.log(`deleteConversation(${conversationId}) resolver`);
+        console.log(
+          "[📁conversation.ts:125] deletedConversation  === ",
+          deletedConversation
+        );
         return { success: true };
       } catch (err: any) {
         console.error("delete Conversation resolver error", err.message);
@@ -127,9 +136,15 @@ const resolvers = {
       }
     },
   },
-  // Subscriptions: {
-  // conversationCreated
-  // }
+  Subscription: {
+    conversationCreated: {
+      subscribe: (_: any, __: any, context: GraphQLContext) => {
+        const { pubsub } = context;
+
+        return pubsub.asyncIterator(["CONVERSATION_CREATED"]);
+      },
+    },
+  },
 };
 
 // Generate TypeScript Types
