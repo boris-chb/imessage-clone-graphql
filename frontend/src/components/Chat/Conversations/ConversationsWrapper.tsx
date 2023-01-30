@@ -61,7 +61,8 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
 
   useEffect(() => {
     subscribeToNewConversations();
-  }, []);
+  }, [getConversationsData?.conversations]);
+
   console.log(
     '[📁ConversationsWrapper.tsx:65] getConversationsData?.conversations  === ',
     getConversationsData?.conversations

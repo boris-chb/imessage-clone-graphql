@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { GraphQLContext, TransactionResult } from "../../types";
 import { ConversationPopulated } from "src/types/conversation";
 import { GraphQLError } from "graphql";
+import { withFilter } from "graphql-subscriptions";
 
 const resolvers = {
   Query: {
@@ -138,14 +139,38 @@ const resolvers = {
   },
   Subscription: {
     conversationCreated: {
-      subscribe: (_: any, __: any, context: GraphQLContext) => {
-        const { pubsub } = context;
+      subscribe: withFilter(
+        (_: any, __: any, context: GraphQLContext) => {
+          // Access pubsub to emit event
+          const { pubsub } = context;
 
-        return pubsub.asyncIterator(["CONVERSATION_CREATED"]);
-      },
+          return pubsub.asyncIterator(["CONVERSATION_CREATED"]);
+        },
+        (
+          payload: ConversationCreatedSubscriptionPayload,
+          _,
+          context: GraphQLContext
+        ) => {
+          // Filter which users to emit event to
+          const { session } = context;
+          const {
+            conversationCreated: { participants },
+          } = payload;
+
+          const isConversationParticipant = !!participants.find(
+            (p) => p.userId === session?.user.id
+          );
+
+          return isConversationParticipant;
+        }
+      ),
     },
   },
 };
+
+export interface ConversationCreatedSubscriptionPayload {
+  conversationCreated: ConversationPopulated;
+}
 
 // Generate TypeScript Types
 export const participantPopulated =
