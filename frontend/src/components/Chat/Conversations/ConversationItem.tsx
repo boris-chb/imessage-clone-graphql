@@ -1,5 +1,5 @@
 import { ConversationPopulated } from '@backend/types/conversation';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Stack, Text } from '@chakra-ui/react';
 import * as React from 'react';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 
@@ -13,14 +13,16 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   onDelete,
 }) => {
   return (
-    <Flex alignItems={'center'}>
-      <Text>{conversation.id}</Text>
-      <IoIosCloseCircleOutline
-        size={20}
-        cursor={'pointer'}
-        onClick={() => onDelete(conversation.id)}
-      />
-    </Flex>
+    <Stack p={4} _hover={{ bg: 'whiteAlpha.200' }} borderRadius={4}>
+      <Text>
+        {conversation.id}
+        <IoIosCloseCircleOutline
+          size={20}
+          cursor={'pointer'}
+          onClick={() => onDelete(conversation.id)}
+        />
+      </Text>
+    </Stack>
   );
 };
 

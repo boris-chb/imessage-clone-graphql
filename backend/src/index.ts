@@ -11,19 +11,45 @@ import { getSession } from "next-auth/react";
 import resolvers from "./graphql/resolvers";
 import { typeDefs } from "./graphql/typeDefs";
 import { PrismaClient } from "@prisma/client";
-import { GraphQLContext } from "./types";
-import { Session } from "./types/user";
+import { GraphQLContext, SubscriptionContext } from "./types";
+import { Session } from "./types/";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/lib/use/ws";
+import { PubSub } from "graphql-subscriptions";
 
 async function main() {
   dotenv.config();
   const app = express();
   const httpServer = http.createServer(app);
   const prisma = new PrismaClient();
+  const pubsub = new PubSub();
 
   const schema = makeExecutableSchema({
     typeDefs,
     resolvers,
   });
+
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: "/graphql/subscriptions",
+  });
+
+  const serverCleanup = useServer(
+    {
+      schema,
+      // pass session to the server from the frontend via context.connectionParams
+      context: async (ctx: SubscriptionContext): Promise<GraphQLContext> => {
+        if (ctx.connectionParams?.session) {
+          // return the session if there is one
+          const { session } = ctx.connectionParams;
+          return { session, prisma, pubsub };
+        }
+
+        return { session: null, prisma, pubsub };
+      },
+    },
+    wsServer
+  );
 
   // Same ApolloServer initialization as before, plus the drain plugin
   // for our httpServer.
@@ -33,6 +59,15 @@ async function main() {
     cache: "bounded",
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
     context: async ({ req, res }): Promise<GraphQLContext> => {
@@ -42,6 +77,7 @@ async function main() {
       return {
         session,
         prisma,
+        pubsub,
       };
     },
   });
@@ -52,8 +88,6 @@ async function main() {
     // necessary to pass Session as Context for resolvers
     credentials: true,
   };
-
-  // const pubsub =
 
   await server.start();
   server.applyMiddleware({

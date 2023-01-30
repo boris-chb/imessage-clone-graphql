@@ -1030,7 +1030,7 @@
   dependencies:
     "tslib" "^2.1.0"
 
-"graphql-ws@^5.9.1":
+"graphql-ws@^5.11.2":
   "integrity" "sha512-4EiZ3/UXYcjm+xFGP544/yW1+DVI8ZpKASFbzrV5EDTFWJp0ZvLl4Dy2fSZAzz9imKp5pZMIcjB0x/H69Pv/6w=="
   "resolved" "https://registry.npmjs.org/graphql-ws/-/graphql-ws-5.11.2.tgz"
   "version" "5.11.2"
@@ -1717,7 +1717,7 @@
     "tr46" "~0.0.3"
     "webidl-conversions" "^3.0.0"
 
-"ws@^8.8.0":
+"ws@^8.12.0":
   "integrity" "sha512-kU62emKIdKVeEIOIKVegvqpXMSTAMLJozpHZaJNDYqBjzlSYXQGviYwN1osDLJ9av68qHd4a2oSjd7yD4pacig=="
   "resolved" "https://registry.npmjs.org/ws/-/ws-8.12.0.tgz"
   "version" "8.12.0"

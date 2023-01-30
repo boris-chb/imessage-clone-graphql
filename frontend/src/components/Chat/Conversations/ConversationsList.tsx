@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { ConversationPopulated } from '@backend/types/conversation';
 import { Box, Text } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import ConversationOperations from 'src/graphql/operations/conversation';
@@ -8,7 +9,7 @@ import {
   DeleteConversationArgs,
   DeleteConversationData,
 } from 'src/types/Conversation';
-import ConversationItem from '.';
+import ConversationItem from './ConversationItem';
 import ConversationsModal from './Modal';
 
 export interface ConversationsListProps {
@@ -20,6 +21,7 @@ const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const session = useSession();
 
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
