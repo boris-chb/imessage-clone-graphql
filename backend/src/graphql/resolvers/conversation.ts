@@ -128,6 +128,10 @@ const resolvers = {
           "[📁conversation.ts:125] deletedConversation  === ",
           deletedConversation
         );
+        console.log(
+          "[📁conversation.ts:132] conversationPopulated after deleting:",
+          conversationPopulated
+        );
         return { success: true };
       } catch (err: any) {
         console.error("delete Conversation resolver error", err.message);

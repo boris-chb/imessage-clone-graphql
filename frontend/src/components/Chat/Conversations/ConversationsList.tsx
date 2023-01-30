@@ -63,9 +63,10 @@ const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
         <>
           {conversations?.map((convo) => (
             <ConversationItem
+              userId={session.data?.user.id}
               key={convo.id}
               conversation={convo}
-              onDelete={onDeleteConversation}
+              onDeleteConversation={onDeleteConversation}
             />
           ))}
         </>
