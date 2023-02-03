@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { ConversationPopulated } from '@backend/types/conversation';
-import { Box, Text } from '@chakra-ui/react';
+import { Box, Stack, Text } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import { Router, useRouter } from 'next/router';
 import { useState } from 'react';
@@ -70,7 +70,7 @@ const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
       </Box>
       <ConversationsModal isOpen={isOpen} onClose={onClose} />
       {conversations?.length !== 0 ? (
-        <>
+        <Stack gap={1}>
           {conversations?.map((convo) => {
             // const participant = conversations.participants.find(
             //   (p) => p.user.id === userId
@@ -83,12 +83,13 @@ const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
                 conversation={convo}
                 onDeleteConversation={onDeleteConversation}
                 isSelected={convo.id === router.query.conversationId}
+                // TODO seenLastMessage:
                 onClick={() => onSelectConversation(convo.id, true)}
                 seenLatestMessage={false}
               />
             );
           })}
-        </>
+        </Stack>
       ) : (
         <>You have no conversations</>
       )}

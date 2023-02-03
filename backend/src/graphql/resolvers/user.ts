@@ -1,5 +1,5 @@
 import { GraphQLContext, TransactionResult } from "../../types";
-import { ApolloError } from "apollo-server-core";
+import { GraphQLError } from "graphql";
 import { User } from "@prisma/client";
 
 const resolvers = {
@@ -13,7 +13,7 @@ const resolvers = {
       const { session, prisma } = context;
 
       if (!session?.user) {
-        throw new ApolloError("Not authorized");
+        throw new GraphQLError("Not authorized");
       }
 
       // get the currently signed in user to filter out during search
@@ -36,7 +36,7 @@ const resolvers = {
         return users;
       } catch (error: any) {
         console.error("searchUser backend resolver", error);
-        throw new ApolloError(error?.message);
+        throw new GraphQLError(error?.message);
       }
     },
   },
