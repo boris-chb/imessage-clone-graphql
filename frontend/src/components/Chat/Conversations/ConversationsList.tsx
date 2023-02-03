@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import { ConversationPopulated } from '@backend/types/conversation';
 import { Box, Text } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import { useState } from 'react';
 import ConversationOperations from 'src/graphql/operations/conversation';
 import {
@@ -14,10 +14,15 @@ import ConversationsModal from './Modal';
 
 export interface ConversationsListProps {
   conversations?: ConversationPopulated[];
+  onSelectConversation: (
+    conversationId: string,
+    seenLatestMessage: boolean | undefined
+  ) => void;
 }
 
 const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
   conversations,
+  onSelectConversation,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -44,7 +49,12 @@ const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
   };
 
   return (
-    <Box width={'100%'}>
+    <Box
+      width={{ base: '100%', md: '400px' }}
+      position="relative"
+      height="100%"
+      overflow="hidden"
+    >
       <Box
         py={2}
         px={4}
@@ -61,14 +71,23 @@ const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
       <ConversationsModal isOpen={isOpen} onClose={onClose} />
       {conversations?.length !== 0 ? (
         <>
-          {conversations?.map((convo) => (
-            <ConversationItem
-              userId={session.data?.user.id}
-              key={convo.id}
-              conversation={convo}
-              onDeleteConversation={onDeleteConversation}
-            />
-          ))}
+          {conversations?.map((convo) => {
+            // const participant = conversations.participants.find(
+            //   (p) => p.user.id === userId
+            // );
+
+            return (
+              <ConversationItem
+                currentUserId={session.data?.user.id as string}
+                key={convo.id}
+                conversation={convo}
+                onDeleteConversation={onDeleteConversation}
+                isSelected={convo.id === router.query.conversationId}
+                onClick={() => onSelectConversation(convo.id, true)}
+                seenLatestMessage={false}
+              />
+            );
+          })}
         </>
       ) : (
         <>You have no conversations</>

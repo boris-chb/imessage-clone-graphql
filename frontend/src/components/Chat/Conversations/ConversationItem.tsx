@@ -16,33 +16,58 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { BiLogOut } from 'react-icons/bi';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { ConversationPopulated } from '@backend/types/conversation';
+import { formatUsernames } from 'src/util/functions';
+
+const formatRelativeLocale = {
+  lastWeek: 'eeee',
+  yesterday: "'Yesterday",
+  today: 'p',
+  other: 'MM/dd/yy',
+};
+
 interface ConversationItemProps {
-  userId: string;
+  currentUserId: string;
   conversation: ConversationPopulated;
-  onDeleteConversation: (conversationId: string) => void;
   isSelected: Boolean;
   seenLatestMessage: boolean | undefined;
+  onDeleteConversation: (conversationId: string) => void;
   onClick: () => void;
+  // onEditConversation: (conversationId: string) => void;
+  // onLeaveConversation: (conversation: ConversationPopulated) => void;
 }
 
 const ConversationItem: React.FC<ConversationItemProps> = ({
-  userId,
+  currentUserId,
   conversation,
   onDeleteConversation,
   isSelected,
   seenLatestMessage,
   onClick,
 }) => {
-  const [menuOpen, setMenuOpen] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleClick = (event: React.MouseEvent) => {
     if (event.type === 'click') {
       onClick();
     } else if (event.type === 'contextmenu') {
+      // ??
       event.preventDefault();
       setMenuOpen(true);
     }
   };
+
+  const dateText = formatRelative(
+    new Date(conversation.updatedAt),
+    new Date(),
+    {
+      locale: {
+        ...enUS,
+        formatRelative: (token) =>
+          formatRelativeLocale[token as keyof typeof formatRelativeLocale],
+      },
+    }
+  );
+
   return (
     <Stack
       direction={'row'}
@@ -53,9 +78,13 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       borderRadius={4}
       bg={isSelected ? 'whiteAlpha.200' : 'none'}
       _hover={{ bg: 'whiteAlpha.200' }}
-      border="1px solid blue"
+      onClick={handleClick}
+      onContextMenu={handleClick}
+      position="relative"
     >
+      {/* Options Menu */}
       <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
+        {/* Edit Panel */}
         <MenuList bg="darkBg.100">
           {/* Edit icon */}
           <MenuItem
@@ -83,7 +112,44 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           </MenuItem>
         </MenuList>
       </Menu>
-      <Text border="1px solid red">{conversation.id}</Text>
+
+      {/* Chat List */}
+      <Flex position={'absolute'} left="-6px">
+        {!seenLatestMessage && <GoPrimitiveDot fontSize={18} color="6B47C1" />}
+      </Flex>
+      <Avatar />
+      <Flex justify={'space-between'} width="80%" height={'100%'}>
+        <Flex direction={'column'} width="70%" height={'100%'}>
+          <Text
+            fontWeight={600}
+            whiteSpace="nowrap"
+            overflow={'hidden'}
+            textOverflow="ellipsis"
+          >
+            {formatUsernames(conversation.participants, currentUserId)}
+          </Text>
+          {conversation.latestMessage && (
+            <Box width={'140%'} maxWidth="360px">
+              <Text
+                color="whiteAlpha.700"
+                whiteSpace={'nowrap'}
+                overflow="hidden"
+                textOverflow={'ellipsis'}
+              >
+                {conversation.latestMessage.body}
+              </Text>
+            </Box>
+          )}
+        </Flex>
+        <Text
+          color="whiteAlpha.700"
+          textAlign={'right'}
+          position="absolute"
+          right={4}
+        >
+          {dateText}
+        </Text>
+      </Flex>
     </Stack>
   );
 };

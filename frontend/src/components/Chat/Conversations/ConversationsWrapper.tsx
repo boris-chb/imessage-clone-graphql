@@ -1,9 +1,10 @@
 import { useQuery } from '@apollo/client';
 import { ConversationPopulated } from '@backend/types/conversation';
-import { Box, Button, Stack } from '@chakra-ui/react';
+import { Box, Button, Stack, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
-import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import ConversationOperations from 'src/graphql/operations/conversation';
 import { GetConversationsData } from 'src/types/Conversation';
@@ -30,6 +31,21 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
     }
   );
 
+  const router = useRouter();
+
+  const onSelectConversation = async (
+    conversationId: string,
+    seenLatestMessage: boolean | undefined
+  ) => {
+    // 1. Push convo to router query params
+    router.push({ query: { conversationId } });
+
+    // 2. Mark conversation as "Read"
+    if (seenLatestMessage) return;
+
+    // TODO Mark conversation as read Mutation
+  };
+
   const subscribeToNewConversations = () => {
     subscribeToMore({
       document: ConversationOperations.Subscriptions.conversationCreated,
@@ -45,12 +61,9 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
           };
         }
       ) => {
-        console.log(
-          '=== subscriptionData ConversationsWrapper.tsx [48] ===',
-          subscriptionData
-        );
         if (!subscriptionData) return prev;
         const newConversation = subscriptionData.data.conversationCreated;
+        console.log('New conversation!:', subscriptionData);
 
         return Object.assign({}, prev, {
           conversations: [newConversation, ...prev.conversations],
@@ -61,23 +74,34 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
 
   useEffect(() => {
     subscribeToNewConversations();
-  }, [getConversationsData?.conversations]);
+  }, []);
 
   console.log(
-    '[📁ConversationsWrapper.tsx:65] getConversationsData?.conversations  === ',
+    '[📁ConversationsWrapper] Conversations:',
     getConversationsData?.conversations
   );
 
   return (
-    <Box width={{ base: '100%', md: '400px' }} bg="whiteAlpha.50" py={6} px={3}>
+    <Box
+      width={{ base: '100%', md: '430px' }}
+      flexDirection="column"
+      bg="whiteAlpha.50"
+      py={6}
+      px={3}
+      display={{
+        base: router.query.conversationId ? 'none' : 'flex',
+        md: 'flex',
+      }}
+    >
       {/* Skeleton loader */}
       <Stack direction={'column'} height="100%">
         {getConversationsData?.conversations ? (
           <ConversationsList
             conversations={getConversationsData?.conversations}
+            onSelectConversation={onSelectConversation}
           />
         ) : (
-          <>Select a conversation</>
+          <Text>Select a conversation</Text>
         )}
         <Button onClick={() => signOut()}>Logout</Button>
       </Stack>
