@@ -45,13 +45,19 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   onClick,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleClick = (event: React.MouseEvent) => {
     if (event.type === 'click') {
       onClick();
     } else if (event.type === 'contextmenu') {
-      // ??
+      // right click
       event.preventDefault();
+      console.log(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+      setMousePosition(() => ({
+        x: event.nativeEvent.offsetX,
+        y: event.nativeEvent.offsetY,
+      }));
       setMenuOpen(true);
     }
   };
@@ -81,37 +87,48 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       onClick={handleClick}
       onContextMenu={handleClick}
       position="relative"
+      overflow="visible"
     >
       {/* Options Menu */}
-      <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
-        {/* Edit Panel */}
-        <MenuList bg="darkBg.100">
-          {/* Edit icon */}
-          <MenuItem
-            icon={<AiOutlineEdit fontSize={20} />}
-            onClick={(event) => {
-              event.stopPropagation();
-              //   onEditConversation();
-            }}
-            bg="#2d2d2d"
-            _hover={{ bg: 'whiteAlpha.300' }}
-          >
-            Edit
-          </MenuItem>
-          {/* Delete Icon */}
-          <MenuItem
-            icon={<MdDeleteOutline fontSize={20} />}
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteConversation(conversation.id);
-            }}
-            bg="darkBg.100"
-            _hover={{ bg: 'whiteAlpha.300' }}
-          >
-            Delete
-          </MenuItem>
-        </MenuList>
-      </Menu>
+      <Box
+        position={'absolute'}
+        left={`${mousePosition.x}px`}
+        top={`${mousePosition.y}px`}
+      >
+        <Menu
+          computePositionOnMount={true}
+          isOpen={menuOpen}
+          onClose={() => setMenuOpen(false)}
+        >
+          {/* Edit Panel */}
+          <MenuList bg="darkBg.100">
+            {/* Edit icon */}
+            <MenuItem
+              icon={<AiOutlineEdit fontSize={20} />}
+              onClick={(event) => {
+                event.stopPropagation();
+                //   onEditConversation();
+              }}
+              bg="#2d2d2d"
+              _hover={{ bg: 'whiteAlpha.300' }}
+            >
+              Edit
+            </MenuItem>
+            {/* Delete Icon */}
+            <MenuItem
+              icon={<MdDeleteOutline fontSize={20} />}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteConversation(conversation.id);
+              }}
+              bg="darkBg.100"
+              _hover={{ bg: 'whiteAlpha.300' }}
+            >
+              Delete
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </Box>
 
       {/* Chat List */}
       <Flex position={'absolute'} left="-6px">

@@ -22,7 +22,7 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
     loading: getConversationsLoading,
     error: getConversationsError,
     subscribeToMore,
-  } = useQuery<GetConversationsData, null>(
+  } = useQuery<GetConversationsData, { readonly: true }>(
     ConversationOperations.Queries.getConversations,
     {
       onError: ({ message }) => {

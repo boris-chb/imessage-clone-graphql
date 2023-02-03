@@ -9,6 +9,7 @@ import {
   DeleteConversationData,
 } from 'src/types/Conversation';
 import MessageHeader from './Message/MessageHeader';
+import MessageInput from './Message/MessageInput';
 
 interface FeedWrapperProps {
   session: Session;
@@ -30,18 +31,20 @@ const FeedWrapper: React.FunctionComponent<FeedWrapperProps> = ({
       direction="column"
     >
       {currentConversationId && typeof currentConversationId === 'string' ? (
-        <Flex
-          direction={'column'}
-          justifyContent="space-between"
-          overflow={'hidden'}
-          flexGrow={1}
-        >
-          <MessageHeader
-            currentConversationId={currentConversationId}
-            userId={session.user.id}
-          />
-          {/* <Messages /> */}
-        </Flex>
+        <>
+          <Flex
+            direction={'column'}
+            justifyContent="space-between"
+            overflow={'hidden'}
+            flexGrow={1}
+          >
+            <MessageHeader
+              currentConversationId={currentConversationId}
+              userId={session.user.id}
+            />
+          </Flex>
+          <MessageInput conversationId={currentConversationId} />
+        </>
       ) : (
         <Text align="center">No conversation selected</Text>
       )}
