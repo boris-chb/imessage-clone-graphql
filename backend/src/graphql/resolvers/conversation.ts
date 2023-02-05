@@ -64,10 +64,7 @@ const resolvers = {
       const {
         user: { id: userId },
       } = session;
-      console.log(
-        "[📁conversation.ts:67] participantIds  === ",
-        participantIds
-      );
+
       // Call db
       try {
         const conversation = await prisma.conversation.create({
