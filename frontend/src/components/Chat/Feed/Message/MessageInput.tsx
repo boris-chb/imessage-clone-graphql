@@ -7,9 +7,7 @@ interface MessageInputProps {
   conversationId: string;
 }
 
-const MessageInput: React.FunctionComponent<MessageInputProps> = ({
-  conversationId,
-}: MessageInputProps) => {
+const MessageInput: React.FC<MessageInputProps> = ({ conversationId }) => {
   const [messageBody, setMessageBody] = useState('');
   const session = useSession();
 
