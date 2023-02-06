@@ -4,14 +4,70 @@ import { withFilter } from "graphql-subscriptions";
 import { useSession } from "next-auth/react";
 import { GraphQLContext } from "src/types";
 import {
+  MessagePopulated,
   MessageSentSubscriptionPayload,
   SendMessageArgs,
 } from "src/types/message";
+import { userIsConversationParticipant } from "src/util/functions";
+import { conversationPopulated } from "./conversation";
 
 const messageResolvers = {
   Query: {
     // Get messages
-    messages: () => {},
+    messages: async (
+      _: any,
+      args: { conversationId: string },
+      context: GraphQLContext
+    ): Promise<Array<MessagePopulated>> => {
+      const { session, prisma } = context;
+      const { conversationId } = args;
+
+      if (!session?.user) {
+        throw new GraphQLError("Not authorized");
+      }
+
+      const {
+        user: { id: currentUserId },
+      } = session;
+
+      //   Verify that conversation exists and user is a participant
+
+      const conversation = await prisma.conversation.findUnique({
+        where: {
+          id: conversationId,
+        },
+        include: conversationPopulated,
+      });
+
+      if (!conversation) {
+        throw new GraphQLError("Conversation not found");
+      }
+
+      const isParticipant = userIsConversationParticipant(
+        conversation.participants,
+        currentUserId
+      );
+
+      if (!isParticipant) {
+        throw new GraphQLError("Not Authorized");
+      }
+
+      try {
+        const messages = await prisma.message.findMany({
+          where: {
+            conversationId,
+          },
+          include: messagePopulated,
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        return messages;
+      } catch (error: any) {
+        throw new GraphQLError("Could not query messages", error?.message);
+      }
+    },
   },
   Mutatuion: {
     sendMessage: async (
@@ -100,6 +156,7 @@ const messageResolvers = {
           args: { conversationId: string },
           context: GraphQLContext
         ) => {
+          console.log("withFilter message sent subscription args", args);
           return payload.messageSent.conversationId === args.conversationId;
         }
       ),
