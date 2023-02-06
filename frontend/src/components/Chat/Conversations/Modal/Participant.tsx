@@ -13,7 +13,6 @@ const Participant: React.FunctionComponent<ParticipantProps> = ({
 }) => {
   return (
     <Stack
-      border="1px solid red"
       key={participant.id}
       align={'center'}
       direction={'row'}

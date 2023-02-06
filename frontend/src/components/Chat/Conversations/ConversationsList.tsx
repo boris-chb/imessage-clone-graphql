@@ -1,20 +1,60 @@
-import { Box, Text } from '@chakra-ui/react';
-import { Session } from 'next-auth';
+import { useMutation } from '@apollo/client';
+import { ConversationPopulated } from '@backend/types/conversation';
+import { Box, Stack, Text } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
+import { Router, useRouter } from 'next/router';
 import { useState } from 'react';
+import ConversationOperations from 'src/graphql/operations/conversation';
+import {
+  DeleteConversationArgs,
+  DeleteConversationData,
+} from 'src/types/Conversation';
+import ConversationItem from './ConversationItem';
 import ConversationsModal from './Modal';
 
-interface ConversationsListProps {}
+export interface ConversationsListProps {
+  conversations?: ConversationPopulated[];
+  onSelectConversation: (
+    conversationId: string,
+    seenLatestMessage: boolean | undefined
+  ) => void;
+}
 
-const ConversationsList: React.FunctionComponent<
-  ConversationsListProps
-> = ({}) => {
+const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
+  conversations,
+  onSelectConversation,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const session = useSession();
 
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
 
+  const [
+    deleteConversation,
+    { loading: deleteConversationLoading, error: deleteConversationError },
+  ] = useMutation<DeleteConversationData, DeleteConversationArgs>(
+    ConversationOperations.Mutations.deleteConversation
+  );
+
+  const onDeleteConversation = async (convId: string) => {
+    await deleteConversation({
+      variables: {
+        conversationId: convId,
+      },
+    });
+
+    router.push('/');
+  };
+
   return (
-    <Box width={'100%'} border="1px solid red">
+    <Box
+      width={{ base: '100%', md: '400px' }}
+      position="relative"
+      height="100%"
+      overflow="hidden"
+    >
       <Box
         py={2}
         px={4}
@@ -29,6 +69,30 @@ const ConversationsList: React.FunctionComponent<
         </Text>
       </Box>
       <ConversationsModal isOpen={isOpen} onClose={onClose} />
+      {conversations?.length !== 0 ? (
+        <Stack gap={1}>
+          {conversations?.map((convo) => {
+            // const participant = conversations.participants.find(
+            //   (p) => p.user.id === userId
+            // );
+
+            return (
+              <ConversationItem
+                currentUserId={session.data?.user.id as string}
+                key={convo.id}
+                conversation={convo}
+                onDeleteConversation={onDeleteConversation}
+                isSelected={convo.id === router.query.conversationId}
+                // TODO seenLastMessage:
+                onClick={() => onSelectConversation(convo.id, true)}
+                seenLatestMessage={false}
+              />
+            );
+          })}
+        </Stack>
+      ) : (
+        <>You have no conversations</>
+      )}
     </Box>
   );
 };

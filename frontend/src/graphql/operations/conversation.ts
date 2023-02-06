@@ -1,7 +1,36 @@
 import { gql } from '@apollo/client';
 
+const GetConversationsFileds = `
+      id
+      participants {
+        user {
+          id
+          username
+        }
+        seenLatestMessage
+      }
+      latestMessage {
+        id
+        sender {
+          id
+          username
+        }
+        body
+        createdAt
+      }
+      updatedAt
+`;
+
 const ConversationOperations = {
-  Queries: {},
+  Queries: {
+    getConversations: gql`
+      query getConversations {
+        conversations {
+          ${GetConversationsFileds}
+        }
+      }
+    `,
+  },
   Mutations: {
     createConversation: gql`
       mutation CreateConversation($participantIds: [String]!) {
@@ -10,8 +39,25 @@ const ConversationOperations = {
         }
       }
     `,
+    deleteConversation: gql`
+      mutation DeleteConversation($conversationId: String!) {
+        deleteConversation(conversationId: $conversationId) {
+          success
+          error
+        }
+      }
+    `,
   },
-  Subscriptions: {},
+  Subscriptions: {
+    conversationCreated: gql`
+      subscription conversationCreated {
+      conversationCreated
+       {
+       ${GetConversationsFileds}
+       }
+      }
+    `,
+  },
 };
 
 export default ConversationOperations;

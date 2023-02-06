@@ -13,7 +13,7 @@ const ParticipantList: React.FunctionComponent<ParticipantListProps> = ({
   removeParticipant,
 }) => {
   return (
-    <Flex mt={8} gap="10px" flexWrap={'wrap'} border="1px solid red">
+    <Flex mt={8} gap="10px" flexWrap={'wrap'}>
       {participants.map((participant) => (
         <Participant
           key={participant.id}

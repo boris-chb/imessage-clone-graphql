@@ -37,10 +37,11 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const router = useRouter();
   const [username, setUsername] = useState('');
-  const session = useSession();
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
+  const [searchedUsers, setSearchedUsers] = useState<Array<SearchedUser>>([]);
+  const router = useRouter();
+  const session = useSession();
   const [searchUsers, { data, error, loading }] = useLazyQuery<
     SearchUsersData,
     SearchUsersInput
@@ -54,6 +55,8 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
     e.preventDefault();
 
     searchUsers({ variables: { username } });
+
+    data?.searchUsers && setSearchedUsers(() => data.searchUsers);
   };
 
   const addParticipant = (user: SearchedUser) => {
@@ -79,8 +82,8 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
       });
 
       if (!data?.createConversation) {
-        throw new Error('Failed to create conversation');
         toast.error('Failed to create conversation');
+        throw new Error('Failed to create conversation');
       }
 
       const {
@@ -91,6 +94,7 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
 
       // Clear state and close modal
       setParticipants([]);
+      setSearchedUsers([]);
       setUsername('');
       onClose();
 
@@ -102,57 +106,51 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent bg="#2d2d2d" pb={4}>
-          <ModalHeader>Start a conversation</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <form onSubmit={onSearch}>
-              <Stack spacing={4}>
-                <Input
-                  placeholder="Enter a username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-                <Button
-                  type="submit"
-                  isDisabled={!username}
-                  isLoading={loading}
-                >
-                  Search
-                </Button>
-              </Stack>
-            </form>
-            {data?.searchUsers && (
-              <UserSearchList
-                users={data.searchUsers}
-                addParticipant={addParticipant}
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent bg="#2d2d2d" pb={4}>
+        <ModalHeader>Start a conversation</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <form onSubmit={onSearch}>
+            <Stack spacing={4}>
+              <Input
+                placeholder="Enter a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
-            )}
-            {participants.length !== 0 && (
-              <>
-                <ParticipantList
-                  participants={participants}
-                  removeParticipant={removeParticipant}
-                />
-                <Button
-                  bg="brand.100"
-                  width={'100%'}
-                  mt={6}
-                  _hover={{ bg: 'brand.100' }}
-                  onClick={onCreateConversation}
-                  isLoading={createConversationLoading}
-                >
-                  Start conversation
-                </Button>
-              </>
-            )}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </>
+              <Button type="submit" isDisabled={!username} isLoading={loading}>
+                Search
+              </Button>
+            </Stack>
+          </form>
+          {searchedUsers.length !== 0 && (
+            <UserSearchList
+              users={searchedUsers}
+              addParticipant={addParticipant}
+            />
+          )}
+          {participants.length !== 0 && (
+            <>
+              <ParticipantList
+                participants={participants}
+                removeParticipant={removeParticipant}
+              />
+              <Button
+                bg="brand.100"
+                width={'100%'}
+                mt={6}
+                _hover={{ bg: 'brand.100' }}
+                onClick={onCreateConversation}
+                isLoading={createConversationLoading}
+              >
+                Start conversation
+              </Button>
+            </>
+          )}
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 };
 
