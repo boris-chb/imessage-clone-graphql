@@ -1,6 +1,6 @@
 import { Stack, Text } from '@chakra-ui/react';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
-import { SearchedUser } from 'src/types/User';
+import { SearchedUser } from 'src/types/user';
 
 interface ParticipantProps {
   participant: SearchedUser;

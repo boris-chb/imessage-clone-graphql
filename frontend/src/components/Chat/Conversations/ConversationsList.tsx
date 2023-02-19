@@ -8,7 +8,7 @@ import ConversationOperations from 'src/graphql/operations/conversation';
 import {
   DeleteConversationArgs,
   DeleteConversationData,
-} from 'src/types/Conversation';
+} from 'src/types/conversation';
 import ConversationItem from './ConversationItem';
 import ConversationsModal from './Modal';
 

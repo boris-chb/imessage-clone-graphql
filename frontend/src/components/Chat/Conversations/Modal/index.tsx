@@ -19,12 +19,12 @@ import UserOperations from 'src/graphql/operations/user';
 import {
   CreateConversationData,
   CreateConversationInput,
-} from 'src/types/Conversation';
+} from 'src/types/conversation';
 import {
   SearchedUser,
   SearchUsersData,
   SearchUsersInput,
-} from 'src/types/User';
+} from 'src/types/user';
 import ParticipantList from './ParticipantList';
 import UserSearchList from './UserSearchList';
 

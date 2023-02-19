@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import ConversationOperations from 'src/graphql/operations/conversation';
-import { GetConversationsData } from 'src/types/Conversation';
+import { GetConversationsData } from 'src/types/conversation';
 import ConversationsList from './ConversationsList';
 
 interface ConversationWrapperProps {

@@ -1,14 +1,13 @@
 import { Prisma } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import { withFilter } from "graphql-subscriptions";
-import { useSession } from "next-auth/react";
 import { GraphQLContext } from "src/types";
 import {
   MessagePopulated,
   MessageSentSubscriptionPayload,
   SendMessageArgs,
 } from "src/types/message";
-import { userIsConversationParticipant } from "src/util/functions";
+// import { userIsConversationParticipant } from "src/util/functions";
 import { conversationPopulated } from "./conversation";
 
 const messageResolvers = {
@@ -43,10 +42,7 @@ const messageResolvers = {
         throw new GraphQLError("Conversation not found");
       }
 
-      const isParticipant = userIsConversationParticipant(
-        conversation.participants,
-        currentUserId
-      );
+      const isParticipant = true;
 
       if (!isParticipant) {
         throw new GraphQLError("Not Authorized");
@@ -63,13 +59,13 @@ const messageResolvers = {
           },
         });
 
-        return messages;
+        return [{ body: "bro" } as MessagePopulated];
       } catch (error: any) {
         throw new GraphQLError("Could not query messages", error?.message);
       }
     },
   },
-  Mutatuion: {
+  Mutation: {
     sendMessage: async (
       _: any,
       args: SendMessageArgs,

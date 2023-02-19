@@ -3,7 +3,7 @@ import { Button, Stack, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import ConversationOperations from '../../../../graphql/operations/conversation';
 import { formatUsernames } from '../../../../util/functions';
-import { GetConversationsData } from '../../../../types/Conversation';
+import { GetConversationsData } from '../../../../types/conversation';
 // import SkeletonLoader from "../../../common/SkeletonLoader";
 
 interface MessageHeaderProps {

@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react';
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import UserOperations from 'src/graphql/operations/user';
-import { CreateUsernameData, CreateUsernameVariables } from 'src/types/User';
+import { CreateUsernameData, CreateUsernameVariables } from 'src/types/user';
 
 interface AuthProps {
   session: Session | null;
