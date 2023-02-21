@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/client';
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex, Stack, Text } from '@chakra-ui/react';
 import { toast } from 'react-hot-toast';
+import SkeletonLoader from 'src/components/Helper/SkeletonLoader';
 import MessageOperations from 'src/graphql/operations/message';
 import { GetMessagesData, GetMessagesVariables } from 'src/types/message';
 
@@ -23,11 +24,17 @@ const MessageList: React.FC<MessageListProps> = ({
     },
   });
 
+  if (error) return null;
+
   console.log('messages data', data);
 
   return (
     <Flex direction={'column'} justify="flex-end" overflow={'hidden'}>
-      {loading && <Text>Loading messages...</Text>}
+      {loading && (
+        <Stack spacing={4} px={4}>
+          <SkeletonLoader count={4} height="60px" />
+        </Stack>
+      )}
       {data?.messages && (
         <Flex direction={'column-reverse'} overflowY="scroll" height={'100%'}>
           {data.messages.map((message) => (

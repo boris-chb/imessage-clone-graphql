@@ -16,7 +16,7 @@
     "@emotion/styled": "^11.10.5",
     "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma/client": "^4.9.0",
-    "bson": "^5.0.0",
+    "bson-objectid": "^2.0.4",
     "date-fns": "^2.29.3",
     "framer-motion": "^9.0.1",
     "graphql": "^16.6.0",

@@ -6,6 +6,7 @@ import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import SkeletonLoader from 'src/components/Helper/SkeletonLoader';
 import ConversationOperations from 'src/graphql/operations/conversation';
 import { GetConversationsData } from 'src/types/conversation';
 import ConversationsList from './ConversationsList';
@@ -19,7 +20,7 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
 }) => {
   const {
     data: getConversationsData,
-    loading: getConversationsLoading,
+    loading: conversationsLoading,
     error: getConversationsError,
     subscribeToMore,
   } = useQuery<GetConversationsData, { readonly: true }>(
@@ -83,28 +84,25 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
 
   return (
     <Box
-      width={{ base: '100%', md: '430px' }}
-      flexDirection="column"
-      bg="whiteAlpha.50"
-      py={6}
-      px={3}
       display={{
         base: router.query.conversationId ? 'none' : 'flex',
         md: 'flex',
       }}
+      flexDirection="column"
+      width={{ base: '100%', md: '430px' }}
+      bg="whiteAlpha.50"
+      gap={4}
+      py={6}
+      px={3}
     >
-      {/* Skeleton loader */}
-      <Stack direction={'column'} height="100%">
-        {getConversationsData?.conversations ? (
-          <ConversationsList
-            conversations={getConversationsData?.conversations}
-            onSelectConversation={onSelectConversation}
-          />
-        ) : (
-          <Text>Select a conversation</Text>
-        )}
-        <Button onClick={() => signOut()}>Logout</Button>
-      </Stack>
+      {conversationsLoading ? (
+        <SkeletonLoader count={5} height="80px" width="360px" />
+      ) : (
+        <ConversationsList
+          conversations={getConversationsData?.conversations}
+          onSelectConversation={onSelectConversation}
+        />
+      )}
     </Box>
   );
 };

@@ -26,7 +26,7 @@ const messageResolvers = {
       }
 
       const {
-        user: { id: currentUserId },
+        user: { id: userId },
       } = session;
 
       //   Verify that conversation exists and user is a participant
@@ -59,7 +59,7 @@ const messageResolvers = {
           },
         });
 
-        return [{ body: "bro" } as MessagePopulated];
+        return messages;
       } catch (error: any) {
         throw new GraphQLError("Could not query messages", error?.message);
       }
@@ -78,11 +78,19 @@ const messageResolvers = {
         throw new GraphQLError("Not authorized");
       }
 
-      const { id: currentUserId } = session.user;
-      const { id: messageId, conversationId, messageBody, senderId } = args;
+      const { id: userId } = session.user;
+      const { id: messageId, conversationId, body, senderId } = args;
 
-      // Can't send messages on behalf of other users
-      if (currentUserId !== senderId) {
+      console.log(body);
+
+      // get the participant entity of conversation user tries to send message to
+      // conversationParticipant.id
+      const participant = await prisma.conversationParticipant.findFirst({
+        where: { userId, conversationId },
+      });
+
+      // Can't send messages on behalf of other users OR when is not participant of conversation
+      if (userId !== senderId || !participant) {
         throw new GraphQLError("Not authorized");
       }
 
@@ -93,12 +101,14 @@ const messageResolvers = {
             id: messageId,
             senderId,
             conversationId,
-            body: messageBody,
+            body,
           },
           include: messagePopulated,
         });
 
-        // update conversation
+        console.log(newMessage);
+
+        // update conversation with new message
         const conversation = await prisma.conversation.update({
           where: {
             id: conversationId,
@@ -108,7 +118,7 @@ const messageResolvers = {
             participants: {
               update: {
                 where: {
-                  id: senderId,
+                  id: participant.id,
                 },
                 data: {
                   seenLatestMessage: true,
@@ -117,7 +127,7 @@ const messageResolvers = {
               updateMany: {
                 where: {
                   NOT: {
-                    userId: senderId,
+                    userId,
                   },
                 },
                 data: {
@@ -126,13 +136,17 @@ const messageResolvers = {
               },
             },
           },
+          include: conversationPopulated,
         });
+
+        console.log("sendMessage conversation:", conversation);
 
         pubsub.publish("MESSAGE_SENT", { messageSent: newMessage });
         // pubsub.publish("CONVERSATION_UPDATED", {
         //   conversation,
         // });
       } catch (error) {
+        console.error(error);
         throw new GraphQLError("Error creating message", error || undefined);
       }
 
