@@ -32,7 +32,6 @@ const MessageInput: React.FC<MessageInputProps> = ({ conversationId }) => {
 
     try {
       // call sendMessage mutation
-      const senderId = session.data?.user.id;
       const newMessage: SendMessageArgs = {
         senderId: session.data?.user.id,
         id: new ObjectID().toString(),
@@ -46,8 +45,12 @@ const MessageInput: React.FC<MessageInputProps> = ({ conversationId }) => {
         },
       });
 
-      console.log('[📁MessageInput.tsx:50] errors:', errors);
-      console.log('[📁MessageInput.tsx:51] data:', data);
+      if (errors) {
+        toast.error(`Error sending message`);
+        console.log(errors);
+      }
+      if (data) console.log('[📁MessageInput.tsx:50] sendMessage data:', data);
+      setMessageBody('');
     } catch (error: any) {
       console.error(error);
       toast.error(error?.message);

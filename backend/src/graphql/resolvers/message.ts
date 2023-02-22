@@ -26,7 +26,7 @@ const messageResolvers = {
       }
 
       const {
-        user: { id: userId },
+        user: { id: currentUserId },
       } = session;
 
       //   Verify that conversation exists and user is a participant
@@ -78,7 +78,7 @@ const messageResolvers = {
         throw new GraphQLError("Not authorized");
       }
 
-      const { id: userId } = session.user;
+      const { id: currentUserId } = session.user;
       const { id: messageId, conversationId, body, senderId } = args;
 
       console.log(body);
@@ -86,11 +86,11 @@ const messageResolvers = {
       // get the participant entity of conversation user tries to send message to
       // conversationParticipant.id
       const participant = await prisma.conversationParticipant.findFirst({
-        where: { userId, conversationId },
+        where: { userId: currentUserId, conversationId },
       });
 
       // Can't send messages on behalf of other users OR when is not participant of conversation
-      if (userId !== senderId || !participant) {
+      if (currentUserId !== senderId || !participant) {
         throw new GraphQLError("Not authorized");
       }
 
@@ -106,7 +106,11 @@ const messageResolvers = {
           include: messagePopulated,
         });
 
-        console.log(newMessage);
+        console.log(
+          "[📁message.ts:109] newMessage:",
+          newMessage,
+          `HERE IS CONVERSATION ID PRISMA TRIES TO UPDATE ${conversationId}`
+        );
 
         // update conversation with new message
         const conversation = await prisma.conversation.update({
@@ -127,7 +131,7 @@ const messageResolvers = {
               updateMany: {
                 where: {
                   NOT: {
-                    userId,
+                    userId: currentUserId,
                   },
                 },
                 data: {
@@ -166,7 +170,6 @@ const messageResolvers = {
           args: { conversationId: string },
           context: GraphQLContext
         ) => {
-          console.log("withFilter message sent subscription args", args);
           return payload.messageSent.conversationId === args.conversationId;
         }
       ),

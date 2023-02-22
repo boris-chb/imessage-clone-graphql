@@ -77,11 +77,6 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
     subscribeToNewConversations();
   }, []);
 
-  console.log(
-    '[📁ConversationsWrapper] Conversations:',
-    getConversationsData?.conversations
-  );
-
   return (
     <Box
       display={{

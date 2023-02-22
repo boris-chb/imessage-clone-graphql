@@ -18,8 +18,6 @@ const FeedWrapper: React.FC<FeedWrapperProps> = ({ session }) => {
     user: { id: currentUserId },
   } = session;
 
-  console.log('typeof currentConversationId', typeof currentConversationId);
-
   return (
     <Flex
       display={{ base: currentConversationId ? 'flex' : 'none', md: 'flex' }}
