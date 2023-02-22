@@ -1,6 +1,6 @@
 import { Avatar, Button, Flex, Stack, Text } from '@chakra-ui/react';
 import user from 'src/graphql/operations/user';
-import { SearchedUser } from 'src/types/User';
+import { SearchedUser } from 'src/types/user';
 
 interface UserSearchItemProps {
   user: SearchedUser;

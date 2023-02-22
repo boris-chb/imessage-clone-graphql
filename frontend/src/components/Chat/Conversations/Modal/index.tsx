@@ -19,12 +19,12 @@ import UserOperations from 'src/graphql/operations/user';
 import {
   CreateConversationData,
   CreateConversationInput,
-} from 'src/types/Conversation';
+} from 'src/types/conversation';
 import {
   SearchedUser,
   SearchUsersData,
   SearchUsersInput,
-} from 'src/types/User';
+} from 'src/types/user';
 import ParticipantList from './ParticipantList';
 import UserSearchList from './UserSearchList';
 
@@ -39,13 +39,12 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
 }) => {
   const [username, setUsername] = useState('');
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
-  const [searchedUsers, setSearchedUsers] = useState<Array<SearchedUser>>([]);
   const router = useRouter();
   const session = useSession();
-  const [searchUsers, { data, error, loading }] = useLazyQuery<
-    SearchUsersData,
-    SearchUsersInput
-  >(UserOperations.Queries.searchUsers);
+  const [searchUsers, { data: searchedUsersData, error, loading }] =
+    useLazyQuery<SearchUsersData, SearchUsersInput>(
+      UserOperations.Queries.searchUsers
+    );
   const [createConversation, { loading: createConversationLoading }] =
     useMutation<CreateConversationData, CreateConversationInput>(
       ConversationOperations.Mutations.createConversation
@@ -55,8 +54,6 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
     e.preventDefault();
 
     searchUsers({ variables: { username } });
-
-    data?.searchUsers && setSearchedUsers(() => data.searchUsers);
   };
 
   const addParticipant = (user: SearchedUser) => {
@@ -94,7 +91,6 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
 
       // Clear state and close modal
       setParticipants([]);
-      setSearchedUsers([]);
       setUsername('');
       onClose();
 
@@ -124,9 +120,9 @@ const ConversationsModal: React.FunctionComponent<ModalProps> = ({
               </Button>
             </Stack>
           </form>
-          {searchedUsers.length !== 0 && (
+          {searchedUsersData && searchedUsersData?.searchUsers.length !== 0 && (
             <UserSearchList
-              users={searchedUsers}
+              users={searchedUsersData.searchUsers}
               addParticipant={addParticipant}
             />
           )}

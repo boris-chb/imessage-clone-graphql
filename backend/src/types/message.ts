@@ -5,7 +5,7 @@ export interface SendMessageArgs {
   id: string;
   conversationId: string;
   senderId: string;
-  messageBody: string;
+  body: string;
 }
 
 export interface MessageSentSubscriptionPayload {

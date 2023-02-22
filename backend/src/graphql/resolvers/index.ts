@@ -3,12 +3,14 @@ import conversationResolvers from "./conversation";
 
 import merge from "lodash.merge";
 import messageResolvers from "./message";
+import scalarResolvers from "./scalars";
 
 const resolvers = merge(
   {},
   userResolvers,
   conversationResolvers,
-  messageResolvers
+  messageResolvers,
+  scalarResolvers
 );
 
 export default resolvers;

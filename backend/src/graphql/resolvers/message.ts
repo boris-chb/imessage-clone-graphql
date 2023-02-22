@@ -1,14 +1,13 @@
 import { Prisma } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import { withFilter } from "graphql-subscriptions";
-import { useSession } from "next-auth/react";
 import { GraphQLContext } from "src/types";
 import {
   MessagePopulated,
   MessageSentSubscriptionPayload,
   SendMessageArgs,
 } from "src/types/message";
-import { userIsConversationParticipant } from "src/util/functions";
+// import { userIsConversationParticipant } from "src/util/functions";
 import { conversationPopulated } from "./conversation";
 
 const messageResolvers = {
@@ -43,10 +42,7 @@ const messageResolvers = {
         throw new GraphQLError("Conversation not found");
       }
 
-      const isParticipant = userIsConversationParticipant(
-        conversation.participants,
-        currentUserId
-      );
+      const isParticipant = true;
 
       if (!isParticipant) {
         throw new GraphQLError("Not Authorized");
@@ -69,7 +65,7 @@ const messageResolvers = {
       }
     },
   },
-  Mutatuion: {
+  Mutation: {
     sendMessage: async (
       _: any,
       args: SendMessageArgs,
@@ -83,10 +79,18 @@ const messageResolvers = {
       }
 
       const { id: currentUserId } = session.user;
-      const { id: messageId, conversationId, messageBody, senderId } = args;
+      const { id: messageId, conversationId, body, senderId } = args;
 
-      // Can't send messages on behalf of other users
-      if (currentUserId !== senderId) {
+      console.log(body);
+
+      // get the participant entity of conversation user tries to send message to
+      // conversationParticipant.id
+      const participant = await prisma.conversationParticipant.findFirst({
+        where: { userId: currentUserId, conversationId },
+      });
+
+      // Can't send messages on behalf of other users OR when is not participant of conversation
+      if (currentUserId !== senderId || !participant) {
         throw new GraphQLError("Not authorized");
       }
 
@@ -97,12 +101,18 @@ const messageResolvers = {
             id: messageId,
             senderId,
             conversationId,
-            body: messageBody,
+            body,
           },
           include: messagePopulated,
         });
 
-        // update conversation
+        console.log(
+          "[📁message.ts:109] newMessage:",
+          newMessage,
+          `HERE IS CONVERSATION ID PRISMA TRIES TO UPDATE ${conversationId}`
+        );
+
+        // update conversation with new message
         const conversation = await prisma.conversation.update({
           where: {
             id: conversationId,
@@ -112,7 +122,7 @@ const messageResolvers = {
             participants: {
               update: {
                 where: {
-                  id: senderId,
+                  id: participant.id,
                 },
                 data: {
                   seenLatestMessage: true,
@@ -121,7 +131,7 @@ const messageResolvers = {
               updateMany: {
                 where: {
                   NOT: {
-                    userId: senderId,
+                    userId: currentUserId,
                   },
                 },
                 data: {
@@ -130,13 +140,17 @@ const messageResolvers = {
               },
             },
           },
+          include: conversationPopulated,
         });
+
+        console.log("sendMessage conversation:", conversation);
 
         pubsub.publish("MESSAGE_SENT", { messageSent: newMessage });
         // pubsub.publish("CONVERSATION_UPDATED", {
         //   conversation,
         // });
       } catch (error) {
+        console.error(error);
         throw new GraphQLError("Error creating message", error || undefined);
       }
 
@@ -156,7 +170,6 @@ const messageResolvers = {
           args: { conversationId: string },
           context: GraphQLContext
         ) => {
-          console.log("withFilter message sent subscription args", args);
           return payload.messageSent.conversationId === args.conversationId;
         }
       ),

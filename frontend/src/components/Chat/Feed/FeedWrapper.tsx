@@ -1,28 +1,22 @@
-import { useMutation } from '@apollo/client';
 import { Flex, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
-import { IoIosCloseCircleOutline } from 'react-icons/io';
-import ConversationOperations from 'src/graphql/operations/conversation';
-import {
-  DeleteConversationArgs,
-  DeleteConversationData,
-} from 'src/types/Conversation';
+
 import MessageHeader from './Message/MessageHeader';
 import MessageInput from './Message/MessageInput';
+import MessageList from './Message/MessageList';
 
 interface FeedWrapperProps {
   session: Session;
 }
 
-const FeedWrapper: React.FunctionComponent<FeedWrapperProps> = ({
-  session,
-}) => {
+const FeedWrapper: React.FC<FeedWrapperProps> = ({ session }) => {
   const router = useRouter();
 
   const { conversationId: currentConversationId } = router.query;
-
-  console.log('typeof currentConversationId', typeof currentConversationId);
+  const {
+    user: { id: currentUserId },
+  } = session;
 
   return (
     <Flex
@@ -40,7 +34,11 @@ const FeedWrapper: React.FunctionComponent<FeedWrapperProps> = ({
           >
             <MessageHeader
               currentConversationId={currentConversationId}
-              userId={session.user.id}
+              userId={currentUserId}
+            />
+            <MessageList
+              conversationId={currentConversationId}
+              userId={currentUserId}
             />
           </Flex>
           <MessageInput conversationId={currentConversationId} />
