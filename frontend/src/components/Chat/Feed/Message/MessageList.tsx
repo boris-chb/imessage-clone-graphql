@@ -3,7 +3,7 @@ import { Flex, Stack, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import SkeletonLoader from 'src/components/Helper/SkeletonLoader';
-import MessageOperations from 'src/graphql/operations/message';
+import { MessageOperations } from 'src/graphql/operations/message';
 import {
   GetMessagesData,
   GetMessagesVariables,
@@ -43,7 +43,10 @@ const MessageList: React.FC<MessageListProps> = ({
         const newMessage = subscriptionData.data.messageSent;
 
         return Object.assign({}, prev, {
-          messages: [newMessage, ...prev.messages],
+          messages:
+            newMessage.sender.id === userId
+              ? prev.messages
+              : [newMessage, ...prev.messages],
         });
       },
       variables: { conversationId },

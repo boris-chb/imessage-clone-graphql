@@ -81,8 +81,6 @@ const messageResolvers = {
       const { id: currentUserId } = session.user;
       const { id: messageId, conversationId, body, senderId } = args;
 
-      console.log(body);
-
       // get the participant entity of conversation user tries to send message to
       // conversationParticipant.id
       const participant = await prisma.conversationParticipant.findFirst({

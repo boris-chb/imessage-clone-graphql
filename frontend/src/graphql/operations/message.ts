@@ -10,7 +10,7 @@ export const GetMessageFields = `
     createdAt
 `;
 
-const MessageOperations = {
+export const MessageOperations = {
   Query: {
     getMessages: gql`
             query Messages($conversationId: String!) {
@@ -49,5 +49,3 @@ const MessageOperations = {
     `,
   },
 };
-
-export default MessageOperations;

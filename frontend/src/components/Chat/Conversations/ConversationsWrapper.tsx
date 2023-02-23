@@ -98,6 +98,7 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
           onSelectConversation={onSelectConversation}
         />
       )}
+      <Button onClick={() => signOut()}>Logout</Button>
     </Box>
   );
 };
