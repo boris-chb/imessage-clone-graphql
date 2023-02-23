@@ -7,6 +7,10 @@ const typeDefs = gql`
     createConversation(participantIds: [String]!): CreateConversationResult
   }
 
+  type Mutation {
+    markAsRead(userId: String!, conversationId: String!): Boolean
+  }
+
   type CreateConversationResult {
     conversationId: String
   }

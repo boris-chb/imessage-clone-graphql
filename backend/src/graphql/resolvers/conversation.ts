@@ -136,6 +136,31 @@ const resolvers = {
         };
       }
     },
+    markAsRead: async (
+      _: any,
+      args: { userId: string; conversationId: string },
+      context: GraphQLContext
+    ): Promise<boolean> => {
+      const { prisma, session } = context;
+      const { conversationId, userId } = args;
+
+      if (!session?.user) throw new GraphQLError("Not authorized");
+
+      try {
+        const { seenLatestMessage } =
+          await prisma.conversationParticipant.update({
+            where: { conversationId },
+            data: { seenLatestMessage: true },
+          });
+
+        console.log(seenLatestMessage);
+
+        return true;
+      } catch (error: any) {
+        console.error(error);
+        throw new GraphQLError(error?.message);
+      }
+    },
   },
   Subscription: {
     conversationCreated: {
