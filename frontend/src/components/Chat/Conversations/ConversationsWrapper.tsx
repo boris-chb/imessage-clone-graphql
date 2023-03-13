@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import {
   ConversationPopulated,
   ParticipantPopulated,
@@ -10,7 +10,10 @@ import React, { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import SkeletonLoader from 'src/components/Helper/SkeletonLoader';
 import ConversationOperations from 'src/graphql/operations/conversation';
-import { GetConversationsData } from 'src/types/conversation';
+import {
+  ConversationUpdatedData,
+  GetConversationsData,
+} from 'src/types/conversation';
 import ConversationsList from './ConversationsList';
 
 interface ConversationWrapperProps {}
@@ -19,6 +22,7 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({}) => {
   const session = useSession();
   const router = useRouter();
 
+  // Get Conversations
   const {
     data: getConversationsData,
     loading: conversationsLoading,
@@ -33,15 +37,41 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({}) => {
     }
   );
 
+  // Mark Conversation as Read
   const [markAsRead] = useMutation<
     { markAsRead: boolean },
     { userId: string; conversationId: string }
   >(ConversationOperations.Mutations.markAsRead);
 
+  // Update Conversation with latest messages
+  useSubscription<ConversationUpdatedData, {}>(
+    ConversationOperations.Subscriptions.conversationUpdated,
+    {
+      onData: ({ client, data }) => {
+        const { data: subData } = data;
+
+        if (!subData) return;
+
+        const {
+          conversationUpdated: { conversation },
+        } = subData;
+
+        const isCurrentlyViewingConversation =
+          conversation.id === router.query.conversationId;
+
+        isCurrentlyViewingConversation &&
+          onViewConversation(router.query.conversationId as string, false);
+      },
+    }
+  );
+
   const onViewConversation = async (
     conversationId: string,
     seenLatestMessage: boolean | undefined
   ) => {
+    // Not Authorized
+    if (!session.data?.user) return;
+
     // 1. Push convo to router query params
     router.push({ query: { conversationId } });
 
@@ -50,8 +80,6 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({}) => {
 
     // TODO Mark conversation as read Mutation
     try {
-      if (!session.data?.user) return;
-
       await markAsRead({
         variables: { userId: session.data.user.id, conversationId },
         optimisticResponse: { markAsRead: true },

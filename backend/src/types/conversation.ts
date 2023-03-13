@@ -4,6 +4,12 @@ import {
   participantPopulated,
 } from "../graphql/resolvers/conversation";
 
+export interface ConversationUpdatedSubscriptionPayload {
+  conversationUpdated: {
+    conversation: ConversationPopulated;
+  };
+}
+
 // Generate TS Types from Prisma
 
 export type ConversationPopulated = Prisma.ConversationGetPayload<{

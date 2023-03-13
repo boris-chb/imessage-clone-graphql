@@ -1,3 +1,4 @@
+import { MessagePopulated } from '@backend/types/message';
 import { ConversationPopulated } from '../../../backend/src/types/conversation';
 
 export interface GetConversationsData {
@@ -12,6 +13,15 @@ export interface CreateConversationData {
 
 export interface CreateConversationInput {
   participantIds: Array<string>;
+}
+
+export interface ConversationUpdatedData {
+  conversationUpdated: {
+    // conversation: Omit<ConversationPopulated, 'latestMessage'> & {
+    //   latestMessage: MessagePopulated;
+    // };
+    conversation: ConversationPopulated;
+  };
 }
 
 export interface DeleteConversationData {

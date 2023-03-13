@@ -31,10 +31,12 @@ const MessageList: React.FC<MessageListProps> = ({
   });
 
   useEffect(() => {
-    subscribeToMoreMessages(conversationId);
+    const unsubscribe = subscribeToMoreMessages(conversationId);
+
+    return () => unsubscribe();
   }, [conversationId]);
 
-  const subscribeToMoreMessages = (conversationId: string) => {
+  const subscribeToMoreMessages = (conversationId: string) =>
     subscribeToMore({
       document: MessageOperations.Subscription.messageSent,
       updateQuery: (prev, { subscriptionData }: MessageSubscriptionData) => {
@@ -51,7 +53,6 @@ const MessageList: React.FC<MessageListProps> = ({
       },
       variables: { conversationId },
     });
-  };
 
   return (
     <Flex direction={'column'} justify="flex-end" overflow={'hidden'}>

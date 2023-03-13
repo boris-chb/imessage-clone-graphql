@@ -27,6 +27,10 @@ const typeDefs = gql`
     updatedAt: Date
   }
 
+  type ConversationUpdatedSubscriptionPayload {
+    conversation: Conversation
+  }
+
   type Participant {
     id: String
     user: User
@@ -43,6 +47,10 @@ const typeDefs = gql`
 
   type Subscription {
     conversationCreated: Conversation
+  }
+
+  type Subscription {
+    conversationUpdated: ConversationUpdatedSubscriptionPayload
   }
 `;
 

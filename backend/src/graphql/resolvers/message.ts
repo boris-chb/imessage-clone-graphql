@@ -104,12 +104,6 @@ const messageResolvers = {
           include: messagePopulated,
         });
 
-        console.log(
-          "[📁message.ts:109] newMessage:",
-          newMessage,
-          `HERE IS CONVERSATION ID PRISMA TRIES TO UPDATE ${conversationId}`
-        );
-
         // update conversation with new message
         const conversation = await prisma.conversation.update({
           where: {
@@ -141,12 +135,12 @@ const messageResolvers = {
           include: conversationPopulated,
         });
 
-        console.log("sendMessage conversation:", conversation);
-
         pubsub.publish("MESSAGE_SENT", { messageSent: newMessage });
-        // pubsub.publish("CONVERSATION_UPDATED", {
-        //   conversation,
-        // });
+        pubsub.publish("CONVERSATION_UPDATED", {
+          conversationUpdated: {
+            conversation,
+          },
+        });
       } catch (error) {
         console.error(error);
         throw new GraphQLError("Error creating message", error || undefined);

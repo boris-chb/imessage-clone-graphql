@@ -57,6 +57,15 @@ const ConversationOperations = {
        }
       }
     `,
+    conversationUpdated: gql`
+      subscription ConversationUpdated {
+      conversationUpdated {
+        conversation {
+        ${GetConversationsFileds}
+        }
+      }
+    }
+    `,
   },
 };
 
