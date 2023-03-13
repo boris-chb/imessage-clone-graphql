@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
+  },
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "prisma:generate": "npx prisma generate --schema=src/prisma/schema.prisma",
     "build": "next build"
   },
   "dependencies": {

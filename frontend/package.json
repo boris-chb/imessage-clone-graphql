@@ -2,12 +2,14 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "migrate": "npx prisma generate --schema=src/prisma/schema.prisma"
+    "lint": "next lint"
   },
   "dependencies": {
     "@apollo/client": "^3.7.6",
