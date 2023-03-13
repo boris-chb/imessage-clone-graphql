@@ -15,7 +15,6 @@ interface MessageListProps {
   userId: string;
   conversationId: string;
 }
-
 const MessageList: React.FC<MessageListProps> = ({
   userId,
   conversationId,
@@ -34,6 +33,8 @@ const MessageList: React.FC<MessageListProps> = ({
     const unsubscribe = subscribeToMoreMessages(conversationId);
 
     return () => unsubscribe();
+
+    // eslint-disable-next-line
   }, [conversationId]);
 
   const subscribeToMoreMessages = (conversationId: string) =>
