@@ -14,7 +14,7 @@ import ConversationsModal from './Modal';
 
 export interface ConversationsListProps {
   conversations?: ConversationPopulated[];
-  onSelectConversation: (
+  onViewConversation: (
     conversationId: string,
     seenLatestMessage: boolean | undefined
   ) => void;
@@ -22,7 +22,7 @@ export interface ConversationsListProps {
 
 const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
   conversations,
-  onSelectConversation,
+  onViewConversation,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -71,21 +71,25 @@ const ConversationsList: React.FunctionComponent<ConversationsListProps> = ({
       <ConversationsModal isOpen={isOpen} onClose={onClose} />
       {conversations?.length !== 0 ? (
         <Stack gap={1}>
-          {conversations?.map((convo) => {
-            // const participant = conversations.participants.find(
-            //   (p) => p.user.id === userId
-            // );
+          {conversations?.map((conversation) => {
+            const participant = conversation.participants.find(
+              (p: any) => p.user.id === session.data?.user.id
+            );
 
             return (
               <ConversationItem
                 currentUserId={session.data?.user.id as string}
-                key={convo.id}
-                conversation={convo}
+                key={conversation.id}
+                conversation={conversation}
                 onDeleteConversation={onDeleteConversation}
-                isSelected={convo.id === router.query.conversationId}
-                // TODO seenLastMessage:
-                onClick={() => onSelectConversation(convo.id, true)}
-                seenLatestMessage={false}
+                isSelected={conversation.id === router.query.conversationId}
+                onClick={() =>
+                  onViewConversation(
+                    conversation.id,
+                    participant.seenLatestMessage
+                  )
+                }
+                seenLatestMessage={participant.seenLatestMessage}
               />
             );
           })}

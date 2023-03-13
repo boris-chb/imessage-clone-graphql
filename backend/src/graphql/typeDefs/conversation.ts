@@ -7,6 +7,10 @@ const typeDefs = gql`
     createConversation(participantIds: [String]!): CreateConversationResult
   }
 
+  type Mutation {
+    markAsRead(userId: String!, conversationId: String!): Boolean
+  }
+
   type CreateConversationResult {
     conversationId: String
   }
@@ -21,6 +25,10 @@ const typeDefs = gql`
     participants: [Participant]
     createdAt: Date
     updatedAt: Date
+  }
+
+  type ConversationUpdatedSubscriptionPayload {
+    conversation: Conversation
   }
 
   type Participant {
@@ -39,6 +47,10 @@ const typeDefs = gql`
 
   type Subscription {
     conversationCreated: Conversation
+  }
+
+  type Subscription {
+    conversationUpdated: ConversationUpdatedSubscriptionPayload
   }
 `;
 

@@ -132,7 +132,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
 
       {/* Chat List */}
       <Flex position={'absolute'} left="-6px">
-        {!seenLatestMessage && <GoPrimitiveDot fontSize={18} color="6B47C1" />}
+        {!seenLatestMessage && <GoPrimitiveDot fontSize={18} color="269eff" />}
       </Flex>
       <Avatar />
       <Flex justify={'space-between'} width="80%" height={'100%'}>
