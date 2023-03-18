@@ -8,8 +8,8 @@
   },
   "scripts": {
     "dev": "npx nodemon src/index.ts",
-    "start": "npx nodemon ./build/src/index.js",
-    "build": "rimraf ./build && tsc"
+    "start": "node ./build/src/index.js",
+    "build": "npm i && rimraf ./build && tsc"
   },
   "dependencies": {
     "@apollo/server": "^4.3.2",
